@@ -7,6 +7,7 @@ use movemegif\data\GlobalColorTable;
 use movemegif\data\GraphicExtension;
 use movemegif\data\HeaderBlock;
 use movemegif\data\LogicalScreenDescriptor;
+use movemegif\data\NetscapeApplicationBlock;
 use movemegif\data\Trailer;
 use movemegif\domain\Image;
 use movemegif\domain\Repeat;
@@ -51,7 +52,8 @@ class GifBuilder
             if ($extension instanceof Image) {
                 $ext = new GraphicExtension();
             } elseif ($extension instanceof Repeat) {
-                $ext = new ApplicationExtension();
+                $ext = new NetscapeApplicationBlock();
+                $ext->setRepeatCount($extension->getTimes());
             } else {
 #todo error
             }

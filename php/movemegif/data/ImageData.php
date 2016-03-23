@@ -33,12 +33,7 @@ class ImageData
 
         $codes = $this->compressCodes($this->gifLzwCompress(implode('', array_map('chr', explode(' ', $data))), $colorCount), $colorCount);
 
-        $blocks = array_chunk($codes, 255);
-
-        $dataSubBlocks = '';
-        foreach ($blocks as $block) {
-            $dataSubBlocks .= chr(count($block)) . implode('', $block);
-        }
+        $dataSubBlocks = DataSubBlock::createBlocks($codes);
 
         return chr($lzwMinimumCodeSize) . $dataSubBlocks . $blockTerminator;
     }
@@ -132,7 +127,7 @@ class ImageData
         $firstCodeSize = $lzwMinimumCodeSize + 1;
         $currentCodeSize = $firstCodeSize;
 
-        $bytes = array();
+        $bytes = '';
         $byte = 0;
         $powerOfTwo = 1;
 
@@ -147,7 +142,7 @@ class ImageData
                 if ($powerOfTwo == 256) {
 
                     // byte full
-                    $bytes[] = chr($byte);
+                    $bytes .= chr($byte);
 
                     // new byte
                     $byte = 0;
@@ -177,7 +172,7 @@ class ImageData
         }
 
         if ($powerOfTwo > 1) {
-            $bytes[] = chr($byte);
+            $bytes .= chr($byte);
         }
 
         return $bytes;

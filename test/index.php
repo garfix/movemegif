@@ -1,4 +1,7 @@
 <?php
+/**
+ * This script builds a simple image and outputs it to the client.
+ */
 
 use movemegif\GifBuilder;
 

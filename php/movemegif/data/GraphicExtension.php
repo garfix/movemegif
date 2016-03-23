@@ -9,10 +9,6 @@ class GraphicExtension
 {
     const EXTENSION_INTRODUCER = 0x21;
     const GRAPHIC_CONTROL_LABEL = 0xF9;
-    const BLOCK_TERMINATOR = 0x00;
-
-    /** @var int Size in bytes */
-    private $blockSize;
 
     /** @var int In [0..7] */
     private $disposalMethod = 0;
@@ -38,11 +34,8 @@ class GraphicExtension
 
         return
             chr(self::EXTENSION_INTRODUCER) . chr(self::GRAPHIC_CONTROL_LABEL) .
-            chr($this->blockSize) .
-            $packedByte .
-            pack('v', $this->delayTime) .
-            chr($this->transparentColorIndex) .
-            chr(self::BLOCK_TERMINATOR) .
+            DataSubBlock::createBlocks(chr($packedByte) . pack('v', $this->delayTime) . chr($this->transparentColorIndex)) .
+            DataSubBlock::createBlocks('') .
             $imageDescriptor->getContents() .
             $imageData->getContents();
     }

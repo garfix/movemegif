@@ -19,4 +19,9 @@ class Repeat
 #todo max = 65535
         $this->count = $n;
     }
+
+    public function getTimes()
+    {
+        return $this->count;
+    }
 }

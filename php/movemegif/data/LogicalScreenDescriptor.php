@@ -8,10 +8,10 @@ namespace movemegif\data;
 class LogicalScreenDescriptor
 {
     /** @var int GIF image width in [0..65535] */
-    private $width = 100;
+    private $width = 10;
 
     /** @var int GIF image height in [0..65535] */
-    private $height = 100;
+    private $height = 10;
 
     /** @var int 1 = color table available; 0 = no color table available */
     private $globalColorTableFlag = 1;
