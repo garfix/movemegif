@@ -9,7 +9,7 @@ use movemegif\data\HeaderBlock;
 use movemegif\data\LogicalScreenDescriptor;
 use movemegif\data\NetscapeApplicationBlock;
 use movemegif\data\Trailer;
-use movemegif\domain\Image;
+use movemegif\domain\Frame;
 use movemegif\domain\Repeat;
 
 /**
@@ -20,17 +20,17 @@ class GifBuilder
     private $extensions = array();
 
     /**
-     * @return Image
+     * @return Frame
      */
-    public function addImage()
+    public function addFrame()
     {
-        $image = new Image();
+        $image = new Frame();
         $this->extensions[] = $image;
         return $image;
     }
 
     /**
-     * @return Image
+     * @return Frame
      */
     public function addRepeat()
     {
@@ -49,7 +49,7 @@ class GifBuilder
         $extensionContents = '';
 
         foreach ($this->extensions as $extension) {
-            if ($extension instanceof Image) {
+            if ($extension instanceof Frame) {
 
                 if ($extension->usesLocalColorTable()) {
                     $colorTable = new ColorTable(true);
@@ -58,6 +58,7 @@ class GifBuilder
                 }
 
                 $graphic = new GraphicExtension($extension->getPixels(), $colorTable);
+                $graphic->setDuration($extension->getduration());
 
                 $extensionContents .= $graphic->getContents();
 

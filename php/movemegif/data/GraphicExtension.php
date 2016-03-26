@@ -26,7 +26,7 @@ class GraphicExtension
     private $transparentColorFlag = 0;
 
     /** @var  int */
-    private $delayTime = 0;
+    private $duration = 0;
 
     /** @var int  */
     private $transparentColorIndex = 0;
@@ -41,6 +41,22 @@ class GraphicExtension
         }
     }
 
+    /**
+     * @param int $duration The time this frame is visible (in 1/100 seconds).
+     */
+    public function setDuration($duration)
+    {
+        $this->duration = $duration;
+    }
+
+    /**
+     * @return int
+     */
+    public function getduration()
+    {
+        return $this->duration;
+    }
+
     public function getContents()
     {
         $packedByte = ($this->disposalMethod * 4) + ($this->userInputFlag * 2) + $this->transparentColorFlag;
@@ -50,7 +66,7 @@ class GraphicExtension
 
         return
             chr(self::EXTENSION_INTRODUCER) . chr(self::GRAPHIC_CONTROL_LABEL) .
-            DataSubBlock::createBlocks(chr($packedByte) . pack('v', $this->delayTime) . chr($this->transparentColorIndex)) .
+            DataSubBlock::createBlocks(chr($packedByte) . pack('v', $this->duration) . chr($this->transparentColorIndex)) .
             DataSubBlock::createBlocks('') .
             $imageDescriptor->getContents() .
             ($this->colorTable->isLocal() ? $this->colorTable->getContents() : '') .

@@ -66,7 +66,7 @@ class ColorTable
                 $color = 0;
             }
 
-            $result .= Math::integer_2_24bit($color);
+            $result .= Formatter::integer_2_24bit($color);
         }
 
         return $result;

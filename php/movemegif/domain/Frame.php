@@ -1,17 +1,19 @@
 <?php
 
 namespace movemegif\domain;
-use movemegif\data\Math;
 
 /**
  * @author Patrick van Bergen
  */
-class Image
+class Frame
 {
     private $pixels = null;
 
     /** @var bool  */
     private $useLocalColorTable = false;
+
+    /** @var int  */
+    private $duration = 0;
 
     /**
      * Enter this image's data as a string of indexes and a indexed color table.
@@ -59,6 +61,32 @@ class Image
         return $this;
     }
 
+    /**
+     * @param boolean $useLocalColorTable
+     * @return $this
+     */
+    public function setUseLocalColorTable($useLocalColorTable)
+    {
+        $this->useLocalColorTable = $useLocalColorTable;
+        return $this;
+    }
+
+    /**
+     * @param int $duration The time this frame is visible (in 1/100 seconds).
+     */
+    public function setDuration($duration)
+    {
+        $this->duration = $duration;
+    }
+
+    /**
+     * @return int
+     */
+    public function getduration()
+    {
+        return $this->duration;
+    }
+
     public function getPixels()
     {
         if ($this->pixels === null) {
@@ -94,13 +122,5 @@ class Image
     public function usesLocalColorTable()
     {
         return $this->useLocalColorTable;
-    }
-
-    /**
-     * @param boolean $useLocalColorTable
-     */
-    public function setUseLocalColorTable($useLocalColorTable)
-    {
-        $this->useLocalColorTable = $useLocalColorTable;
     }
 }

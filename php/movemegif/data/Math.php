@@ -36,14 +36,4 @@ class Math
 
         return $size;
     }
-
-    /**
-     * Returns the lowest 24 bits of an integer as a string of 3 bytes.
-     * @param int $number
-     * @return string
-     */
-    public static function integer_2_24bit($number)
-    {
-        return chr($number >> 16) . chr($number >> 8) . chr($number);
-    }
 }
