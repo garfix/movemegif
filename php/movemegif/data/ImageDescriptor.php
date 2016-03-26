@@ -18,7 +18,7 @@ class ImageDescriptor
     private $height = 10;
 
     /** @var  int In [0, 1] */
-    private $localColorTableFlag = 0;
+    private $localColorTableFlag = 1;
 
     /** @var  int In [0, 1] */
     private $interlaceFlag = 0;

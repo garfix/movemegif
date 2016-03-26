@@ -11,9 +11,29 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
     {
         require_once __DIR__ . '/../php/autoloader.php';
 
+        $pixelIndexes = "
+            1 1 1 1 1 2 2 2 2 2
+            1 1 1 1 1 2 2 2 2 2
+            1 1 1 1 1 2 2 2 2 2
+            1 1 1 0 0 0 0 2 2 2
+            1 1 1 0 0 0 0 2 2 2
+            2 2 2 0 0 0 0 1 1 1
+            2 2 2 0 0 0 0 1 1 1
+            2 2 2 2 2 1 1 1 1 1
+            2 2 2 2 2 1 1 1 1 1
+            2 2 2 2 2 1 1 1 1 1
+        ";
+
+        $colorTable = array(
+            '0' => 0xFFFFFF,
+            '1' => 0xFF0000,
+            '2' => 0x0000FF,
+            '3' => 0x000000
+        );
+
         $Builder = new GifBuilder();
 
-        $Builder->addImage();
+        $Builder->addImage()->setPixelsAndColors($pixelIndexes, $colorTable)->setUseLocalColorTable(false);
 
         $contents = $Builder->getContents();
 

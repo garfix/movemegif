@@ -3,7 +3,7 @@
 namespace movemegif;
 
 use movemegif\data\ApplicationExtension;
-use movemegif\data\GlobalColorTable;
+use movemegif\data\ColorTable;
 use movemegif\data\GraphicExtension;
 use movemegif\data\HeaderBlock;
 use movemegif\data\LogicalScreenDescriptor;
@@ -43,21 +43,35 @@ class GifBuilder
     {
         $logicalScreenDescriptor = new LogicalScreenDescriptor();
         $headerBlock = new HeaderBlock();
-        $globalColorTable = new GlobalColorTable();
+        $globalColorTable = new ColorTable(false);
         $trailer = new Trailer();
 
         $extensionContents = '';
 
         foreach ($this->extensions as $extension) {
             if ($extension instanceof Image) {
-                $ext = new GraphicExtension();
+
+                if ($extension->usesLocalColorTable()) {
+                    $colorTable = new ColorTable(true);
+                } else {
+                    $colorTable = $globalColorTable;
+                }
+
+                $graphic = new GraphicExtension($extension->getPixels(), $colorTable);
+
+                $extensionContents .= $graphic->getContents();
+
             } elseif ($extension instanceof Repeat) {
-                $ext = new NetscapeApplicationBlock();
-                $ext->setRepeatCount($extension->getTimes());
+
+                $repeat = new NetscapeApplicationBlock();
+                $repeat->setRepeatCount($extension->getTimes());
+
+                $extensionContents .= $repeat->getContents();
+
             } else {
 #todo error
             }
-            $extensionContents .= $ext->getContents();
+
         }
 
         return

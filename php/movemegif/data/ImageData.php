@@ -7,35 +7,30 @@ namespace movemegif\data;
  */
 class ImageData
 {
-    const BLOCK_TERMINATOR = '0';
     const NUMBER_OF_SPECIAL_CODES = 2;
+
+    /** @var int[] An array of color indexes */
+    private $pixelColorIndexes;
+
+    /** @var  int */
+    private $colorTableSize;
+
+    public function __construct(array $pixelColorIndexes, $colorTableSize)
+    {
+        $this->pixelColorIndexes = $pixelColorIndexes;
+        $this->colorTableSize = $colorTableSize;
+    }
 
     public function getContents()
     {
-        $colorCount = 4;
-
         /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
-        $lzwMinimumCodeSize = $this->getMinimumCodeSize($colorCount);
+        $lzwMinimumCodeSize = $this->getMinimumCodeSize($this->colorTableSize);
 
-        $blockTerminator = chr(self::BLOCK_TERMINATOR);
+        $codes = $this->compressCodes($this->gifLzwCompress(implode('', array_map('chr', $this->pixelColorIndexes)), $this->colorTableSize), $this->colorTableSize);
 
-        $data =
-            "1 1 1 1 1 2 2 2 2 2 " .
-            "1 1 1 1 1 2 2 2 2 2 " .
-            "1 1 1 1 1 2 2 2 2 2 " .
-            "1 1 1 0 0 0 0 2 2 2 " .
-            "1 1 1 0 0 0 0 2 2 2 " .
-            "2 2 2 0 0 0 0 1 1 1 " .
-            "2 2 2 0 0 0 0 1 1 1 " .
-            "2 2 2 2 2 1 1 1 1 1 " .
-            "2 2 2 2 2 1 1 1 1 1 " .
-            "2 2 2 2 2 1 1 1 1 1";
+        $dataSubBlocks = DataSubBlock::createBlocks($codes) . DataSubBlock::createBlocks('');
 
-        $codes = $this->compressCodes($this->gifLzwCompress(implode('', array_map('chr', explode(' ', $data))), $colorCount), $colorCount);
-
-        $dataSubBlocks = DataSubBlock::createBlocks($codes);
-
-        return chr($lzwMinimumCodeSize) . $dataSubBlocks . $blockTerminator;
+        return chr($lzwMinimumCodeSize) . $dataSubBlocks;
     }
 
     function gifLzwCompress($uncompressedString, $colorIndexCount)
@@ -104,7 +99,7 @@ class ImageData
         $sequence2code = array();
 
         $dictSize = 0;
-        $powerOfTwo = $this->getFirstHigherPowerOfTwo($colorIndexCount);
+        $powerOfTwo = Math::firstPowerOfTwo($colorIndexCount);
 
         // fill up the map with entries up to a power of 2
         for ($colorIndex = 0; $colorIndex < $powerOfTwo; $colorIndex++) {
@@ -178,22 +173,9 @@ class ImageData
         return $bytes;
     }
 
-    private function getFirstHigherPowerOfTwo($number)
-    {
-        return pow(2, $this->getMinimumCodeSize($number));
-    }
-
     private function getMinimumCodeSize($colorCount)
     {
-        $size = 0;
-        $bits = $colorCount - 1;
-
-        while ($bits > 0) {
-            $size++;
-            $bits >>= 1;
-        }
-
         // The GIF spec requires a minimum of 2
-        return max(2, $size);
+        return max(2, Math::minimumBits($colorCount));
     }
 }
