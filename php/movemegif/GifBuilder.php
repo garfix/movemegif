@@ -3,26 +3,29 @@
 namespace movemegif;
 
 use movemegif\data\ColorTable;
+use movemegif\data\Extension;
 use movemegif\data\GraphicExtension;
 use movemegif\data\HeaderBlock;
 use movemegif\data\LogicalScreenDescriptor;
 use movemegif\data\NetscapeApplicationBlock;
 use movemegif\data\Trailer;
 use movemegif\domain\Frame;
-use movemegif\domain\Repeat;
 
 /**
  * @author Patrick van Bergen
  */
 class GifBuilder
 {
+    /** @var Extension[] */
     private $extensions = array();
 
-    /** @var Repeat */
+    /** @var int The number of times all frames must be repeated */
     private $repeat = null;
 
+    /** @var  int Width of the canvas in [0..65535] */
     private $width;
 
+    /** @var  int Height of the canvas in [0..65535] */
     private $height;
 
     public function __construct($width, $height)
@@ -32,6 +35,10 @@ class GifBuilder
     }
 
     /**
+     * @param $width
+     * @param $height
+     * @param int $left
+     * @param int $top
      * @return Frame
      */
     public function addFrame($width, $height, $left = 0, $top = 0)
@@ -48,14 +55,11 @@ class GifBuilder
      * At the time of writing, Chrome interprets $nTimes = 2 as 2 times on top of the 1 time it normally plays.
      * For Firefox, $nTimes = 2 means: play 2 times.
      *
-     * @return Repeat
+     * @param int $nTimes
      */
     public function setRepeat($nTimes = 0)
     {
-        $repeat = new Repeat();
-        $repeat->setTimes($nTimes);
-        $this->repeat = $repeat;
-        return $repeat;
+        $this->repeat = $nTimes;
     }
 
     public function getContents()
@@ -66,14 +70,16 @@ class GifBuilder
 
         $extensionContents = '';
 
-        if ($this->repeat) {
+        if ($this->repeat !== null) {
+
             $repeat = new NetscapeApplicationBlock();
-            $repeat->setRepeatCount($this->repeat->getTimes());
+            $repeat->setRepeatCount($this->repeat);
 
             $extensionContents .= $repeat->getContents();
         }
 
         foreach ($this->extensions as $extension) {
+
             if ($extension instanceof Frame) {
 
                 if ($extension->usesLocalColorTable()) {
@@ -93,11 +99,7 @@ class GifBuilder
                 );
 
                 $extensionContents .= $graphic->getContents();
-
-            } else {
-#todo error
             }
-
         }
 
         $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable);

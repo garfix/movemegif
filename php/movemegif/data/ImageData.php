@@ -12,7 +12,7 @@ class ImageData
     /** @var int[] An array of color indexes */
     private $pixelColorIndexes;
 
-    /** @var  int */
+    /** @var  int Number of colors in the table (a power of two) */
     private $colorTableSize;
 
     public function __construct(array $pixelColorIndexes, $colorTableSize)
@@ -28,11 +28,14 @@ class ImageData
 
         $codes = $this->compressCodes($this->gifLzwCompress(implode('', array_map('chr', $this->pixelColorIndexes)), $this->colorTableSize), $this->colorTableSize);
 
-        $dataSubBlocks = DataSubBlock::createBlocks($codes) . DataSubBlock::createBlocks('');
-
-        return chr($lzwMinimumCodeSize) . $dataSubBlocks;
+        return chr($lzwMinimumCodeSize) . DataSubBlock::createBlocks($codes) . DataSubBlock::createBlocks('');
     }
 
+    /**
+     * @param string $uncompressedString
+     * @param int $colorIndexCount A power of two.
+     * @return array
+     */
     function gifLzwCompress($uncompressedString, $colorIndexCount)
     {
         // the resulting compressed string
@@ -93,16 +96,19 @@ class ImageData
         return $resultCodes;
     }
 
+    /**
+     * @param int $colorIndexCount A power of two
+     * @return array
+     */
     private function createSequence2CodeMap($colorIndexCount)
     {
         // a map of color index sequences to special codes
         $sequence2code = array();
 
         $dictSize = 0;
-        $powerOfTwo = Math::firstPowerOfTwo($colorIndexCount);
 
         // fill up the map with entries up to a power of 2
-        for ($colorIndex = 0; $colorIndex < $powerOfTwo; $colorIndex++) {
+        for ($colorIndex = 0; $colorIndex < $colorIndexCount; $colorIndex++) {
             $sequence2code[chr($colorIndex)] = $dictSize++;
         }
 
@@ -115,6 +121,11 @@ class ImageData
         return array($sequence2code, $dictSize, $clearCode, $endOfInformationCode);
     }
 
+    /**
+     * @param array $codes
+     * @param int $colorCount A power of two.
+     * @return string
+     */
     private function compressCodes(array $codes, $colorCount)
     {
         /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */

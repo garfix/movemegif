@@ -5,7 +5,7 @@ namespace movemegif\data;
 /**
  * @author Patrick van Bergen
  */
-class GraphicExtension
+class GraphicExtension implements Extension
 {
     const EXTENSION_INTRODUCER = 0x21;
     const GRAPHIC_CONTROL_LABEL = 0xF9;
@@ -56,14 +56,6 @@ class GraphicExtension
         foreach ($pixelData as $color) {
             $this->pixelColorIndexes[] = $colorTable->getColorIndex($color);
         }
-    }
-
-    /**
-     * @return int
-     */
-    public function getduration()
-    {
-        return $this->duration;
     }
 
     public function getContents()
