@@ -7,7 +7,7 @@ namespace movemegif\data;
  */
 class ColorTable
 {
-    /** @var  bool Does this table contain the color of just one image? */
+    /** @var  bool Is this table linked to a single frame? */
     private $local;
 
     /** @var array An map of colors [index => color int] */
@@ -26,6 +26,10 @@ class ColorTable
         return $this->local;
     }
 
+    /**
+     * @param $color
+     * @return int An index
+     */
     public function getColorIndex($color)
     {
         $key = array_search($color, $this->colorIndexes);
@@ -49,14 +53,15 @@ class ColorTable
      */
     public function getTableSize()
     {
-        return Math::firstPowerOfTwo(count($this->colorIndexes));
+        // The GIF spec requires a minimum of 4
+        return max(4, Math::firstPowerOfTwo(count($this->colorIndexes)));
     }
 
     public function getContents()
     {
         $result = '';
         $colorCount = count($this->colorIndexes);
-        $maxI = Math::firstPowerOfTwo($colorCount);
+        $maxI = $this->getTableSize();
 
         for ($i = 0; $i < $maxI; $i++) {
 
