@@ -15,7 +15,11 @@ class Math
      */
     public static function firstPowerOfTwo($number)
     {
-        return pow(2, self::minimumBits($number));
+        if ($number == 0) {
+            return 0;
+        } else {
+            return pow(2, self::minimumBits($number));
+        }
     }
 
     /**
@@ -35,5 +39,16 @@ class Math
         }
 
         return $size;
+    }
+
+    /**
+     * Returns the exponent of $number if $number is a power of two.
+     *
+     * @param $number
+     * @return int
+     */
+    public static function getExponent($number)
+    {
+        return log($number, 2);
     }
 }

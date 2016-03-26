@@ -3,6 +3,8 @@
 use movemegif\data\Formatter;
 use movemegif\data\NetscapeApplicationBlock;
 
+require_once __DIR__ . '/../php/autoloader.php';
+
 /**
  * @author Patrick van Bergen
  */
@@ -10,8 +12,6 @@ class NetscapeApplicationBlockTest extends PHPUnit_Framework_TestCase
 {
     public function testNAB()
     {
-        require_once __DIR__ . '/../php/autoloader.php';
-
         $block = new NetscapeApplicationBlock();
         $block->setRepeatCount(5);
 

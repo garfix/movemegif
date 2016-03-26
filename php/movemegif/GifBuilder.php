@@ -2,7 +2,6 @@
 
 namespace movemegif;
 
-use movemegif\data\ApplicationExtension;
 use movemegif\data\ColorTable;
 use movemegif\data\GraphicExtension;
 use movemegif\data\HeaderBlock;
@@ -19,34 +18,60 @@ class GifBuilder
 {
     private $extensions = array();
 
-    /**
-     * @return Frame
-     */
-    public function addFrame()
+    /** @var Repeat */
+    private $repeat = null;
+
+    private $width;
+
+    private $height;
+
+    public function __construct($width, $height)
     {
-        $image = new Frame();
-        $this->extensions[] = $image;
-        return $image;
+        $this->width = $width;
+        $this->height = $height;
     }
 
     /**
      * @return Frame
      */
-    public function addRepeat()
+    public function addFrame($width, $height, $left = 0, $top = 0)
+    {
+        $frame = new Frame($width, $height, $left, $top);
+        $this->extensions[] = $frame;
+        return $frame;
+    }
+
+    /**
+     * The number of times the frames should be repeated (0 = loop forever).
+     *
+     * Note: clients are known to interpret this differently.
+     * At the time of writing, Chrome interprets $nTimes = 2 as 2 times on top of the 1 time it normally plays.
+     * For Firefox, $nTimes = 2 means: play 2 times.
+     *
+     * @return Repeat
+     */
+    public function setRepeat($nTimes = 0)
     {
         $repeat = new Repeat();
-        $this->extensions[] = $repeat;
+        $repeat->setTimes($nTimes);
+        $this->repeat = $repeat;
         return $repeat;
     }
 
     public function getContents()
     {
-        $logicalScreenDescriptor = new LogicalScreenDescriptor();
-        $headerBlock = new HeaderBlock();
         $globalColorTable = new ColorTable(false);
+        $headerBlock = new HeaderBlock();
         $trailer = new Trailer();
 
         $extensionContents = '';
+
+        if ($this->repeat) {
+            $repeat = new NetscapeApplicationBlock();
+            $repeat->setRepeatCount($this->repeat->getTimes());
+
+            $extensionContents .= $repeat->getContents();
+        }
 
         foreach ($this->extensions as $extension) {
             if ($extension instanceof Frame) {
@@ -57,23 +82,25 @@ class GifBuilder
                     $colorTable = $globalColorTable;
                 }
 
-                $graphic = new GraphicExtension($extension->getPixels(), $colorTable);
-                $graphic->setDuration($extension->getduration());
+                $graphic = new GraphicExtension(
+                    $extension->getPixels(),
+                    $colorTable,
+                    $extension->getduration(),
+                    $extension->getWidth(),
+                    $extension->getHeight(),
+                    $extension->getLeft(),
+                    $extension->getTop()
+                );
 
                 $extensionContents .= $graphic->getContents();
-
-            } elseif ($extension instanceof Repeat) {
-
-                $repeat = new NetscapeApplicationBlock();
-                $repeat->setRepeatCount($extension->getTimes());
-
-                $extensionContents .= $repeat->getContents();
 
             } else {
 #todo error
             }
 
         }
+
+        $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable);
 
         return
             $headerBlock->getContents() .

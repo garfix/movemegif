@@ -14,7 +14,7 @@ class Repeat
         $this->count = 0;
     }
 
-    public function nTimes($n)
+    public function setTimes($n)
     {
 #todo max = 65535
         $this->count = $n;

@@ -9,16 +9,20 @@ class ImageDescriptor
 {
     const IMAGE_SEPARATOR = 0x2C;
 
-    private $left = 0;
+    /** @var int Frame image left position in [0..65535] */
+    private $left;
 
-    private $top = 0;
+    /** @var int Frame image top position in [0..65535] */
+    private $top;
 
-    private $width = 10;
+    /** @var int Frame image width in [0..65535] */
+    private $width;
 
-    private $height = 10;
+    /** @var int Frame image height in [0..65535] */
+    private $height;
 
-    /** @var  int In [0, 1] */
-    private $localColorTableFlag = 1;
+    /** @var  ColorTable */
+    private $colorTable;
 
     /** @var  int In [0, 1] */
     private $interlaceFlag = 0;
@@ -26,16 +30,31 @@ class ImageDescriptor
     /** @var  int In [0, 1] */
     private $sortFlag = 0;
 
-    /** @var  int In [0..7] */
-    private $sizeOfLocalColorTable = 0;
+    public function __construct($width, $height, $left, $top, ColorTable $colorTable)
+    {
+        $this->width = $width;
+        $this->height = $height;
+        $this->left = $left;
+        $this->top = $top;
+        $this->colorTable = $colorTable;
+    }
 
     public function getContents()
     {
+        $localColorTableFlag = (int)$this->colorTable->isLocal();
+
+        if ($localColorTableFlag) {
+            $colorTableSize = $this->colorTable->getTableSize();
+            $sizeOfLocalColorTable = $colorTableSize ? Math::getExponent($colorTableSize) - 1 : 0;
+        } else {
+            $sizeOfLocalColorTable = 0;
+        }
+
         $packedByte =
-            chr($this->localColorTableFlag * 128) .
-            chr($this->interlaceFlag * 64) .
-            chr($this->sortFlag * 32) .
-            chr($this->sizeOfLocalColorTable);
+            $localColorTableFlag * 128 +
+            $this->interlaceFlag * 64 +
+            $this->sortFlag * 32 +
+            $sizeOfLocalColorTable;
 
         return
             chr(self::IMAGE_SEPARATOR) .

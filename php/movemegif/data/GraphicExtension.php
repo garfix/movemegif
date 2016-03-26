@@ -16,6 +16,21 @@ class GraphicExtension
     /** @var ColorTable  */
     private $colorTable = null;
 
+    /** @var  int $duration The time this frame is visible (in 1/100 seconds). */
+    private $duration = 0;
+
+    /** @var int Frame image left position in [0..65535] */
+    private $left;
+
+    /** @var int Frame image top position in [0..65535] */
+    private $top;
+
+    /** @var int Frame image width in [0..65535] */
+    private $width;
+
+    /** @var int Frame image height in [0..65535] */
+    private $height;
+
     /** @var int In [0..7] */
     private $disposalMethod = 0;
 
@@ -25,28 +40,22 @@ class GraphicExtension
     /** @var int In [0, 1] */
     private $transparentColorFlag = 0;
 
-    /** @var  int */
-    private $duration = 0;
-
     /** @var int  */
     private $transparentColorIndex = 0;
 
-    public function __construct(array $pixelData, ColorTable $colorTable)
+    public function __construct(array $pixelData, ColorTable $colorTable, $duration, $width, $height, $left, $top)
     {
         $this->colorTable = $colorTable;
+        $this->duration = $duration;
+        $this->width = $width;
+        $this->height = $height;
+        $this->left = $left;
+        $this->top = $top;
 
         $this->pixelColorIndexes = array();
         foreach ($pixelData as $color) {
             $this->pixelColorIndexes[] = $colorTable->getColorIndex($color);
         }
-    }
-
-    /**
-     * @param int $duration The time this frame is visible (in 1/100 seconds).
-     */
-    public function setDuration($duration)
-    {
-        $this->duration = $duration;
     }
 
     /**
@@ -61,7 +70,7 @@ class GraphicExtension
     {
         $packedByte = ($this->disposalMethod * 4) + ($this->userInputFlag * 2) + $this->transparentColorFlag;
 
-        $imageDescriptor = new ImageDescriptor();
+        $imageDescriptor = new ImageDescriptor($this->width, $this->height, $this->left, $this->top, $this->colorTable);
         $imageData = new ImageData($this->pixelColorIndexes, $this->colorTable->getTableSize());
 
         return

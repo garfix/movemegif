@@ -7,9 +7,16 @@ namespace movemegif\data;
  */
 class DataSubBlock
 {
+    /**
+     * Splits $bytes in byte blocks of at most 255 bytes. Each block is preceded by its length (a single byte).
+     *
+     * @param $bytes
+     * @return string
+     */
     public static function createBlocks($bytes)
     {
         $dataSubBlocks = '';
+
         foreach (str_split($bytes, 255) as $block) {
             $dataSubBlocks .= chr(strlen($block)) . $block;
         }

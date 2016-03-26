@@ -3,6 +3,8 @@
 use movemegif\data\Formatter;
 use movemegif\GifBuilder;
 
+require_once __DIR__ . '/../php/autoloader.php';
+
 /**
  * @author Patrick van Bergen
  */
@@ -10,8 +12,6 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
 {
     public function testCreateImage()
     {
-        require_once __DIR__ . '/../php/autoloader.php';
-
         $pixelIndexes = "
             1 1 1 1 1 2 2 2 2 2
             1 1 1 1 1 2 2 2 2 2
@@ -25,16 +25,15 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
             2 2 2 2 2 1 1 1 1 1
         ";
 
-        $colorTable = array(
+        $index2color = array(
             '0' => 0xFFFFFF,
             '1' => 0xFF0000,
             '2' => 0x0000FF,
             '3' => 0x000000
         );
 
-        $Builder = new GifBuilder();
-
-        $Builder->addFrame()->setPixelsAndColors($pixelIndexes, $colorTable)->setUseLocalColorTable(false);
+        $Builder = new GifBuilder(10, 10);
+        $Builder->addFrame(10, 10)->setPixelsAndColors($pixelIndexes, $index2color)->setUseLocalColorTable(false);
 
         $contents = $Builder->getContents();
 

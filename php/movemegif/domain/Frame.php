@@ -15,6 +15,59 @@ class Frame
     /** @var int  */
     private $duration = 0;
 
+
+    /** @var int Frame image left position in [0..65535] */
+    private $left;
+
+    /** @var int Frame image top position in [0..65535] */
+    private $top;
+
+    /** @var int Frame image width in [0..65535] */
+    private $width;
+
+    /** @var int Frame image height in [0..65535] */
+    private $height;
+
+    public function __construct($width, $height, $left, $top)
+    {
+        $this->width = $width;
+        $this->height = $height;
+        $this->left = $left;
+        $this->top = $top;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLeft()
+    {
+        return $this->left;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTop()
+    {
+        return $this->top;
+    }
+
+    /**
+     * @return int
+     */
+    public function getWidth()
+    {
+        return $this->width;
+    }
+
+    /**
+     * @return int
+     */
+    public function getHeight()
+    {
+        return $this->height;
+    }
+
     /**
      * Enter this image's data as a string of indexes and a indexed color table.
      *
@@ -35,10 +88,10 @@ class Frame
      * Each color is coded as 0x00RRGGBB (unused, red, green, blue bytes)
      *
      * @param string $pixelIndexes A whitespace separated string of color indexes.
-     * @param int[] $colorTable An index 2 RGB color map.
+     * @param int[] $index2color An index 2 RGB color map.
      * @return $this
      */
-    public function setPixelsAndColors($pixelIndexes, array $colorTable)
+    public function setPixelsAndColors($pixelIndexes, array $index2color)
     {
         $array = array();
 
@@ -48,8 +101,8 @@ class Frame
 
             $index = $match[0];
 
-            if (array_key_exists($index, $colorTable)) {
-                $array[] = $colorTable[$index];
+            if (array_key_exists($index, $index2color)) {
+                $array[] = $index2color[$index];
             } else {
 #todo
             }
@@ -73,10 +126,12 @@ class Frame
 
     /**
      * @param int $duration The time this frame is visible (in 1/100 seconds).
+     * @return $this
      */
     public function setDuration($duration)
     {
         $this->duration = $duration;
+        return $this;
     }
 
     /**
