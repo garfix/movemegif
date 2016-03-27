@@ -31,7 +31,7 @@ function image1()
 
     $Builder = new GifBuilder(10, 10);
 
-    $Builder->addFrame(10, 10)->setPixelsAndColors($pixelIndexes, $colorTable)->setUseLocalColorTable(false);
+    $Builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $colorTable)->setUseLocalColorTable(false);
 
     $Builder->output();
 }
@@ -61,7 +61,7 @@ function image2()
     $Builder = new GifBuilder(10, 10);
 
     $Builder->addFrame(10, 10)
-        ->setPixelsAndColors($pixelIndexes, $colorTable)
+        ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
         ->setUseLocalColorTable(false)
         ->setDuration(50);
 
@@ -79,7 +79,7 @@ function image2()
     ";
 
     $Builder->addFrame(10, 10)
-        ->setPixelsAndColors($pixelIndexes, $colorTable)
+        ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
         ->setUseLocalColorTable(false)
         ->setDuration(50);
 

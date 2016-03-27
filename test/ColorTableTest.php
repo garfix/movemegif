@@ -5,6 +5,12 @@ use movemegif\GifBuilder;
 require_once __DIR__ . '/../php/autoloader.php';
 
 /**
+ * Tests global color table shared by two frames.
+ * Tests local color tables.
+ * Tests a color table with more than 4 (8) entries.
+ * Tests duration.
+ * Integration test that builds complete GIF.
+ *
  * @author Patrick van Bergen
  */
 class ColorTableTest extends PHPUnit_Framework_TestCase
@@ -27,7 +33,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $Builder = new GifBuilder(4, 4);
 
         $Builder->addFrame(4, 4)
-            ->setPixelsAndColors($pixelIndexes, $index2color)
+            ->setPixelsAsIndexedColors($pixelIndexes, $index2color)
             ->setUseLocalColorTable(false)
             ->setDuration(50);
 
@@ -45,7 +51,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         );
 
         $Builder->addFrame(4, 4)
-            ->setPixelsAndColors($pixelIndexes, $index2color)
+            ->setPixelsAsIndexedColors($pixelIndexes, $index2color)
             ->setUseLocalColorTable(false)
             ->setDuration(50);
 
@@ -75,7 +81,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $Builder = new GifBuilder(4, 4);
 
         $Builder->addFrame(4, 4)
-            ->setPixelsAndColors($pixelIndexes, $colorTable)
+            ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
             ->setUseLocalColorTable(true)
             ->setDuration(50);
 
@@ -93,7 +99,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         );
 
         $Builder->addFrame(4, 4)
-            ->setPixelsAndColors($pixelIndexes, $colorTable)
+            ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
             ->setUseLocalColorTable(true)
             ->setDuration(50);
 

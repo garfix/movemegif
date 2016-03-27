@@ -6,6 +6,8 @@ use movemegif\GifBuilder;
 require_once __DIR__ . '/../php/autoloader.php';
 
 /**
+ * Integration test that builds a simple GIF.
+ *
  * @author Patrick van Bergen
  */
 class SimpleImageTest extends PHPUnit_Framework_TestCase
@@ -33,7 +35,7 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
         );
 
         $Builder = new GifBuilder(10, 10);
-        $Builder->addFrame(10, 10)->setPixelsAndColors($pixelIndexes, $index2color)->setUseLocalColorTable(false);
+        $Builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $index2color)->setUseLocalColorTable(false);
 
         $contents = $Builder->getContents();
 

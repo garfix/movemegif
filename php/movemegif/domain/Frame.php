@@ -91,7 +91,7 @@ class Frame
      * @param int[] $index2color An index 2 RGB color map.
      * @return $this
      */
-    public function setPixelsAndColors($pixelIndexes, array $index2color)
+    public function setPixelsAsIndexedColors($pixelIndexes, array $index2color)
     {
         $array = array();
 
@@ -115,6 +115,8 @@ class Frame
     }
 
     /**
+     * Create a custom color table for this frame alone (true) or merge colors in the global color table (false).
+     *
      * @param boolean $useLocalColorTable
      * @return $this
      */
@@ -146,7 +148,7 @@ class Frame
     {
         if ($this->pixels === null) {
 
-            $this->setPixelsAndColors("
+            $this->setPixelsAsIndexedColors("
                 1 1 1 1 1 2 2 2 2 2
                 1 1 1 1 1 2 2 2 2 2
                 1 1 1 1 1 2 2 2 2 2

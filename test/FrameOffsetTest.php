@@ -6,11 +6,15 @@ use movemegif\GifBuilder;
 require_once __DIR__ . '/../php/autoloader.php';
 
 /**
+ * Tests frames with top/left offset.
+ * Tests palette with only 2 colors.
+ * Tests duration.
+ * Integration test that builds complete GIF.
+ *
  * @author Patrick van Bergen
  */
 class FrameOffsetTest extends PHPUnit_Framework_TestCase
 {
-    // also tests: palette with only 2 colors
     public function testOffset()
     {
         $frame1 = "
@@ -28,7 +32,7 @@ class FrameOffsetTest extends PHPUnit_Framework_TestCase
         );
 
         $Builder = new GifBuilder(6, 6);
-        $Builder->addFrame(6, 6)->setPixelsAndColors($frame1, $index2color)->setDuration(50);
+        $Builder->addFrame(6, 6)->setPixelsAsIndexedColors($frame1, $index2color)->setDuration(50);
 
         $frame2 = "
             2 2 2 2
@@ -36,7 +40,7 @@ class FrameOffsetTest extends PHPUnit_Framework_TestCase
             2 2 2 2
         ";
 
-        $Builder->addFrame(4, 3, 2, 3)->setPixelsAndColors($frame2, $index2color);
+        $Builder->addFrame(4, 3, 2, 3)->setPixelsAsIndexedColors($frame2, $index2color);
 
         $contents = $Builder->getContents();
 
