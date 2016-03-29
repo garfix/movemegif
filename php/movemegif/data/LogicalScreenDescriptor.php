@@ -25,11 +25,12 @@ class LogicalScreenDescriptor
     /** @var int Probably not used by clients. Not used here. */
     private $pixelAspectRatio = 0;
 
-    public function __construct($width, $height, ColorTable $colorTable)
+    public function __construct($width, $height, ColorTable $colorTable, $backgroundColor)
     {
         $this->width = $width;
         $this->height = $height;
         $this->colorTable = $colorTable;
+        $this->backgroundColorIndex = ($backgroundColor !== null ? $this->colorTable->getColorIndex($backgroundColor) : 0);
     }
 
     public function getContents()

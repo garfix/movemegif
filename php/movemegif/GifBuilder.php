@@ -22,6 +22,9 @@ class GifBuilder
     /** @var int The number of times all frames must be repeated */
     private $repeat = null;
 
+    /** @var int A 0x00RRGGBB representation of a color */
+    private $backgroundColor = null;
+
     /** @var  int Width of the canvas in [0..65535] */
     private $width;
 
@@ -65,6 +68,26 @@ class GifBuilder
         $this->repeat = $nTimes;
     }
 
+    /**
+     * Sets the "background color", the color that is used to erase a frame at the end of its duration.
+     *
+     * This color is used when Frame::setDisposalToOverwriteWithBackgroundColor() is used
+     *
+     * @param int $color A 0x00RRGGBB representation of a color.
+     */
+    public function setBackgroundColor($color)
+    {
+        $this->backgroundColor = $color;
+    }
+
+    /**
+     * @return int A 0x00RRGGBB representation of a color.
+     */
+    public function getBackgroundColor()
+    {
+        return $this->backgroundColor;
+    }
+
     public function getContents()
     {
         $globalColorTable = new ColorTable(false);
@@ -106,7 +129,7 @@ class GifBuilder
             }
         }
 
-        $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable);
+        $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable, $this->backgroundColor);
 
         return
             $headerBlock->getContents() .

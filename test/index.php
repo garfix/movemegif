@@ -96,37 +96,43 @@ function image3()
     header('Content-disposition: inline; filename="name.gif"');
 
     $frame1 = "
-            2 2 1 1 1 1
-            2 2 1 1 1 1
-            2 2 1 1 1 1
-            2 2 1 1 1 1
-            2 2 1 1 1 1
-            2 2 1 1 1 1
+            0 1 2 3 1 1
+            1 1 1 1 1 1
+            1 1 1 1 1 1
+            1 1 1 1 1 1
+            1 1 1 1 1 1
+            1 1 1 1 1 1
         ";
 
     $index2color = array(
-        '1' => 0xFFFFFF,
-        '2' => 0xFF0000,
+        '0' => 0x00FF00,
+        '1' => 0xFF0000,
+        '2' => 0x000000,
         '3' => 0x0000FF,
     );
 
-    $Builder = new GifBuilder(6, 6);
-    $Builder->addFrame(6, 6)->setPixelsAsIndexedColors($frame1, $index2color)->setDuration(50);
+    $builder = new GifBuilder(6, 6);
+    $builder->addFrame()->setPixelsAsIndexedColors($frame1, $index2color)->setDuration(50)->setUseLocalColorTable(false);
 
     $frame2 = "
-            3 3 3 3
-            3 3 3 3
-            3 3 3 3
+            2 2 2 3 3 3
+            2 2 2 3 3 3
+            2 2 2 3 3 3
+            2 2 2 3 3 3
+            2 2 2 3 3 3
+            2 2 2 3 3 3
         ";
 
-    $Builder->addFrame(4, 3, 2, 0)->setPixelsAsIndexedColors($frame2, $index2color)->setDuration(50)->setDisposalToOverwriteWithPreviousFrame();
-    $Builder->addFrame(4, 3, 2, 3)->setPixelsAsIndexedColors($frame2, $index2color)->setDuration(50)->setDisposalToOverwriteWithPreviousFrame();
+    $builder->addFrame()->setPixelsAsIndexedColors($frame2, $index2color)->setDuration(50)->setDisposalToOverwriteWithPreviousFrame()->setUseLocalColorTable(false);
 
-    $Builder->output();exit;
+    $builder->output();exit;
 
-    foreach (explode(" ", $bytes) as $byte) {
-        echo hex2bin($byte);
-    }
+//    $bytes = $builder->getContents();
+//
+//    foreach (explode(" ", $bytes) as $byte) {
+//        echo hex2bin($byte);
+//    }
+//    exit;
 }
 
 image3();

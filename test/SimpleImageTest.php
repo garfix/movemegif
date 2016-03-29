@@ -35,10 +35,10 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
             '3' => 0x000000
         );
 
-        $Builder = new GifBuilder(10, 10);
-        $Builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $index2color)->setUseLocalColorTable(false);
+        $builder = new GifBuilder(10, 10);
+        $builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $index2color)->setUseLocalColorTable(false);
 
-        $contents = $Builder->getContents();
+        $contents = $builder->getContents();
 
         $actual = Formatter::byteString2hexString($contents);
         $expected = "47 49 46 38 39 61 0A 00 0A 00 91 00 00 FF 00 00 00 00 FF FF FF FF 00 00 00 21 F9 04 00 00 00 00 00 2C 00 00 00 00 0A 00 0A 00 00 02 16 84 1D 99 87 1A 0C DC 33 A2 0A 75 EC 95 FA A8 DE 60 8C 04 91 4C 01 00 3B";

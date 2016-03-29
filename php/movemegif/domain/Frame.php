@@ -158,18 +158,22 @@ class Frame
 
     /**
      * Specify what happens at the end of this frame: overwrite all pixels of this frame with the background color of the canvas.
+     * @return $this
      */
     public function setDisposalToOverwriteWithBackgroundColor()
     {
         $this->disposalMethod = self::DISPOSAL_RESTORE_TO_BG_COLOR;
+        return $this;
     }
 
     /**
      * Specify what happens at the end of this frame: overwrite all pixels of this frame with pixels of the previous frame.
+     * @return $this
      */
     public function setDisposalToOverwriteWithPreviousFrame()
     {
         $this->disposalMethod = self::DISPOSAL_RESTORE_TO_PREVIOUS_FRAME;
+        return $this;
     }
 
     /**
