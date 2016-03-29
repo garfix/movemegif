@@ -13,16 +13,16 @@ class LogicalScreenDescriptor
     /** @var int GIF image height in [0..65535] */
     private $height;
 
-    /** @var int Bits per pixel, minus one. In [0..7] */
+    /** @var int Bits per pixel, minus one. In [0..7]. Is probably not used; if it is, 7 would be more appropriate. */
     private $colorResolution = 1;
 
-    /** @var int 1 = colors are sorted in decreasing importance */
+    /** @var int 1 = colors are sorted in decreasing importance. Not used here. */
     private $sortFlag = 0;
 
     /** @var int Index of background color in Global Color Table */
     private $backgroundColorIndex = 0;
 
-    /** @var int Probably not used by clients */
+    /** @var int Probably not used by clients. Not used here. */
     private $pixelAspectRatio = 0;
 
     public function __construct($width, $height, ColorTable $colorTable)

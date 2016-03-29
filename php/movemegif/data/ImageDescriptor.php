@@ -24,10 +24,10 @@ class ImageDescriptor
     /** @var  ColorTable */
     private $colorTable;
 
-    /** @var  int In [0, 1] */
+    /** @var  int In [0, 1] Not used here. */
     private $interlaceFlag = 0;
 
-    /** @var  int In [0, 1] */
+    /** @var  int In [0, 1] Not used here.*/
     private $sortFlag = 0;
 
     public function __construct($width, $height, $left, $top, ColorTable $colorTable)

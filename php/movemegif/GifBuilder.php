@@ -35,14 +35,17 @@ class GifBuilder
     }
 
     /**
-     * @param $width
-     * @param $height
+     * @param int $width Width in pixels (when left out, the width of the GIF's canvas is presumed)
+     * @param int $height Similar to $width
      * @param int $left
      * @param int $top
      * @return Frame
      */
-    public function addFrame($width, $height, $left = 0, $top = 0)
+    public function addFrame($width = null, $height = null, $left = 0, $top = 0)
     {
+        $width = ($width !== null ? $width : $this->width);
+        $height = ($height !== null ? $height : $this->height);
+
         $frame = new Frame($width, $height, $left, $top);
         $this->extensions[] = $frame;
         return $frame;
@@ -92,6 +95,7 @@ class GifBuilder
                     $extension->getPixels(),
                     $colorTable,
                     $extension->getduration(),
+                    $extension->getDisposalMethod(),
                     $extension->getWidth(),
                     $extension->getHeight(),
                     $extension->getLeft(),

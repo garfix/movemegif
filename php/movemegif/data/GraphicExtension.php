@@ -14,10 +14,10 @@ class GraphicExtension implements Extension
     private $pixelColorIndexes;
 
     /** @var ColorTable  */
-    private $colorTable = null;
+    private $colorTable;
 
     /** @var  int $duration The time this frame is visible (in 1/100 seconds). */
-    private $duration = 0;
+    private $duration;
 
     /** @var int Frame image left position in [0..65535] */
     private $left;
@@ -32,9 +32,9 @@ class GraphicExtension implements Extension
     private $height;
 
     /** @var int In [0..7] */
-    private $disposalMethod = 0;
+    private $disposalMethod;
 
-    /** @var int In [0, 1] */
+    /** @var int In [0, 1] Probably not used by current browsers. Not used here. */
     private $userInputFlag = 0;
 
     /** @var int In [0, 1] */
@@ -43,10 +43,11 @@ class GraphicExtension implements Extension
     /** @var int  */
     private $transparentColorIndex = 0;
 
-    public function __construct(array $pixelData, ColorTable $colorTable, $duration, $width, $height, $left, $top)
+    public function __construct(array $pixelData, ColorTable $colorTable, $duration, $disposalMethod, $width, $height, $left, $top)
     {
         $this->colorTable = $colorTable;
         $this->duration = $duration;
+        $this->disposalMethod = $disposalMethod;
         $this->width = $width;
         $this->height = $height;
         $this->left = $left;

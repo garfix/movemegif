@@ -94,33 +94,35 @@ function image3()
 
     header('Content-type: image/gif');
     header('Content-disposition: inline; filename="name.gif"');
-//
-//    $frame1 = "
-//            1 1 1 1 2 2
-//            1 1 1 1 2 2
-//            1 1 1 1 2 2
-//            2 2 1 1 1 1
-//            2 2 1 1 1 1
-//            2 2 1 1 1 1
-//        ";
-//
-//    $index2color = array(
-//        '1' => 0xFFFFFF,
-//        '2' => 0xFF0000,
-//    );
-//
-//    $Builder = new GifBuilder(6, 6);
-//    $Builder->addFrame(6, 6)->setPixelsAndColors($frame1, $index2color)->setDuration(50);
-//
-//    $frame2 = "
-//            2 2 2 2
-//            2 1 1 2
-//            2 2 2 2
-//        ";
-//
-//    $Builder->addFrame(4, 3, 2, 3)->setPixelsAndColors($frame2, $index2color);
-//
-//    $Builder->output();exit;
+
+    $frame1 = "
+            2 2 1 1 1 1
+            2 2 1 1 1 1
+            2 2 1 1 1 1
+            2 2 1 1 1 1
+            2 2 1 1 1 1
+            2 2 1 1 1 1
+        ";
+
+    $index2color = array(
+        '1' => 0xFFFFFF,
+        '2' => 0xFF0000,
+        '3' => 0x0000FF,
+    );
+
+    $Builder = new GifBuilder(6, 6);
+    $Builder->addFrame(6, 6)->setPixelsAsIndexedColors($frame1, $index2color)->setDuration(50);
+
+    $frame2 = "
+            3 3 3 3
+            3 3 3 3
+            3 3 3 3
+        ";
+
+    $Builder->addFrame(4, 3, 2, 0)->setPixelsAsIndexedColors($frame2, $index2color)->setDuration(50)->setDisposalToOverwriteWithPreviousFrame();
+    $Builder->addFrame(4, 3, 2, 3)->setPixelsAsIndexedColors($frame2, $index2color)->setDuration(50)->setDisposalToOverwriteWithPreviousFrame();
+
+    $Builder->output();exit;
 
     foreach (explode(" ", $bytes) as $byte) {
         echo hex2bin($byte);

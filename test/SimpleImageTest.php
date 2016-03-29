@@ -7,6 +7,7 @@ require_once __DIR__ . '/../php/autoloader.php';
 
 /**
  * Integration test that builds a simple GIF.
+ * Tests defaults.
  *
  * @author Patrick van Bergen
  */

@@ -7,6 +7,12 @@ namespace movemegif\domain;
  */
 class Frame
 {
+    const DISPOSAL_UNDEFINED = 0;
+    const DISPOSAL_LEAVE = 1;
+    const DISPOSAL_RESTORE_TO_BG_COLOR = 2;
+    const DISPOSAL_RESTORE_TO_PREVIOUS_FRAME = 3;
+
+    /** @var int[] An array of 0xRRGGBB colors */
     private $pixels = null;
 
     /** @var bool  */
@@ -15,6 +21,8 @@ class Frame
     /** @var int  */
     private $duration = 0;
 
+    /** @var int  */
+    private $disposalMethod = self::DISPOSAL_UNDEFINED;
 
     /** @var int Frame image left position in [0..65535] */
     private $left;
@@ -111,6 +119,10 @@ class Frame
 
         $this->pixels = $array;
 
+        if (count($array) != $this->width * $this->height) {
+#todo throw error
+        }
+
         return $this;
     }
 
@@ -137,11 +149,35 @@ class Frame
     }
 
     /**
-     * @return int
+     * @return int The time this frame is visible (in 1/100 seconds).
      */
     public function getduration()
     {
         return $this->duration;
+    }
+
+    /**
+     * Specify what happens at the end of this frame: overwrite all pixels of this frame with the background color of the canvas.
+     */
+    public function setDisposalToOverwriteWithBackgroundColor()
+    {
+        $this->disposalMethod = self::DISPOSAL_RESTORE_TO_BG_COLOR;
+    }
+
+    /**
+     * Specify what happens at the end of this frame: overwrite all pixels of this frame with pixels of the previous frame.
+     */
+    public function setDisposalToOverwriteWithPreviousFrame()
+    {
+        $this->disposalMethod = self::DISPOSAL_RESTORE_TO_PREVIOUS_FRAME;
+    }
+
+    /**
+     * @return int
+     */
+    public function getDisposalMethod()
+    {
+        return $this->disposalMethod;
     }
 
     public function getPixels()
