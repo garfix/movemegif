@@ -113,6 +113,7 @@ function image3()
 
     $builder = new GifBuilder(6, 6);
     $builder->setBackgroundColor(0x00FF00);
+    $builder->setRepeat();
     $builder->addFrame()->setPixelsAsIndexedColors($frame1, $index2color)->setDuration(50)
         ->setUseLocalColorTable(false);
 
@@ -128,7 +129,7 @@ function image3()
     $builder->addFrame(6, 3, 0, 3)->setPixelsAsIndexedColors($frame2, $index2color)->setDuration(50)->setDisposalToOverwriteWithBackgroundColor()
         ->setUseLocalColorTable(false);
 
-//    $builder->output();exit;
+    $builder->output();exit;
 
     $bytes = $builder->getContents();
 

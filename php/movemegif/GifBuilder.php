@@ -20,6 +20,9 @@ class GifBuilder
     /** @var Extension[] */
     private $extensions = array();
 
+    /** @var string[] */
+    private $comments = array();
+
     /** @var int The number of times all frames must be repeated */
     private $repeat = null;
 
@@ -89,6 +92,16 @@ class GifBuilder
         return $this->backgroundColor;
     }
 
+    /**
+     * Adds a commenting text to the file. This comment serves mainly as a signature of the creator,
+     *
+     * @param string $comment
+     */
+    public function addComment($comment)
+    {
+        $this->comments[] = $comment;
+    }
+
     public function getContents()
     {
         $globalColorTable = new ColorTable(false);
@@ -131,9 +144,16 @@ class GifBuilder
             }
         }
 
-        // signature of creating software
-        $comment = new CommentExtension('movemegif');
-        $extensionContents .= $comment->getContents();
+        // comments
+        $comments = $this->comments;
+
+        // prepend our signature
+        array_unshift($comments, "movemegif");
+
+        foreach ($comments as $comment) {
+            $extension = new CommentExtension($comment);
+            $extensionContents .= $extension->getContents();
+        }
 
         $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable, $this->backgroundColor);
 
