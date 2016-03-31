@@ -7,7 +7,6 @@ namespace movemegif\data;
  */
 abstract class ApplicationExtension implements Extension
 {
-    const EXTENSION_INTRODUCER = 0x21;
     const APPLICATION_EXTENSION_LABEL = 0xFF;
     const APP_START = 1;
 

@@ -3,6 +3,7 @@
 namespace movemegif;
 
 use movemegif\data\ColorTable;
+use movemegif\data\CommentExtension;
 use movemegif\data\Extension;
 use movemegif\data\GraphicExtension;
 use movemegif\data\HeaderBlock;
@@ -129,6 +130,10 @@ class GifBuilder
                 $extensionContents .= $graphic->getContents();
             }
         }
+
+        // signature of creating software
+        $comment = new CommentExtension('movemegif');
+        $extensionContents .= $comment->getContents();
 
         $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable, $this->backgroundColor);
 

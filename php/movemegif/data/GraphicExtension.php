@@ -7,7 +7,6 @@ namespace movemegif\data;
  */
 class GraphicExtension implements Extension
 {
-    const EXTENSION_INTRODUCER = 0x21;
     const GRAPHIC_CONTROL_LABEL = 0xF9;
 
     /** @var array An array color indexes */

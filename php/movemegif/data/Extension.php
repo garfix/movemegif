@@ -7,5 +7,7 @@ namespace movemegif\data;
  */
 interface Extension
 {
+    const EXTENSION_INTRODUCER = 0x21;
 
+    public function getContents();
 }

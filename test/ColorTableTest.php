@@ -60,7 +60,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $contents = $builder->getContents();
 
         $actual = Formatter::byteString2hexString($contents);
-        $expected = "47 49 46 38 39 61 04 00 04 00 92 01 00 FF 00 00 FF FF FF 00 00 00 00 00 FF 80 80 80 00 00 00 00 00 00 00 00 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 00 02 07 04 12 20 82 7B 09 0A 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 00 03 08 38 43 34 22 EC AD 36 12 00 3B";
+        $expected = "47 49 46 38 39 61 04 00 04 00 92 01 00 FF 00 00 FF FF FF 00 00 00 00 00 FF 80 80 80 00 00 00 00 00 00 00 00 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 00 02 07 04 12 20 82 7B 09 0A 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 00 03 08 38 43 34 22 EC AD 36 12 00 21 FE 09 6D 6F 76 65 6D 65 67 69 66 00 3B";
 
         $this->assertEquals($expected, $actual);
     }
@@ -108,7 +108,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $contents = $builder->getContents();
 
         $actual = Formatter::byteString2hexString($contents);
-        $expected = "47 49 46 38 39 61 04 00 04 00 91 00 00 00 00 00 00 00 00 00 00 00 00 00 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 81 FF 00 00 FF FF FF 00 00 00 00 00 00 02 07 04 12 20 82 7B 09 0A 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 81 00 00 FF 80 80 80 00 00 00 00 00 00 02 07 04 12 20 82 7B 09 0A 00 3B";
+        $expected = "47 49 46 38 39 61 04 00 04 00 91 00 00 00 00 00 00 00 00 00 00 00 00 00 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 81 FF 00 00 FF FF FF 00 00 00 00 00 00 02 07 04 12 20 82 7B 09 0A 00 21 F9 04 00 32 00 00 00 2C 00 00 00 00 04 00 04 00 81 00 00 FF 80 80 80 00 00 00 00 00 00 02 07 04 12 20 82 7B 09 0A 00 21 FE 09 6D 6F 76 65 6D 65 67 69 66 00 3B";
 
         $this->assertEquals($expected, $actual);
     }
@@ -141,7 +141,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $contents = $builder->getContents();
 
         $actual = Formatter::byteString2hexString($contents);
-        $expected = "47 49 46 38 39 61 04 00 04 00 91 00 00 0A 0B 0C 00 00 00 00 00 00 00 00 00 21 F9 04 00 00 00 00 00 2C 00 00 00 00 04 00 04 00 81 FF 00 00 FF FF FF 00 00 00 00 00 00 02 07 04 12 20 82 7B 09 0A 00 3B";
+        $expected = "47 49 46 38 39 61 04 00 04 00 91 00 00 0A 0B 0C 00 00 00 00 00 00 00 00 00 21 F9 04 00 00 00 00 00 2C 00 00 00 00 04 00 04 00 81 FF 00 00 FF FF FF 00 00 00 00 00 00 02 07 04 12 20 82 7B 09 0A 00 21 FE 09 6D 6F 76 65 6D 65 67 69 66 00 3B";
 
         $this->assertEquals($expected, $actual);
     }
