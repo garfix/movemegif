@@ -24,6 +24,9 @@ class Frame
     /** @var int  */
     private $disposalMethod = self::DISPOSAL_UNDEFINED;
 
+    /** @var int|null The 0xRRGGBB color that specifies the pixels that will be made transparent (null = none) */
+    private $transparencyColor = null;
+
     /** @var int Frame image left position in [0..65535] */
     private $left;
 
@@ -174,6 +177,22 @@ class Frame
     {
         $this->disposalMethod = self::DISPOSAL_RESTORE_TO_PREVIOUS_FRAME;
         return $this;
+    }
+
+    /**
+     * @param int $color The 0xRRGGBB color that specifies which pixels should be made transparent.
+     */
+    public function setTransparencyColor($color)
+    {
+        $this->transparencyColor = $color;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getTransparencyColor()
+    {
+        return $this->transparencyColor;
     }
 
     /**

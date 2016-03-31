@@ -37,6 +37,7 @@ class FeatureTest extends PHPUnit_Framework_TestCase
             ->setPixelsAsIndexedColors($frame1, $index2color)
             ->setDuration(50)
             ->setDisposalToOverwriteWithPreviousFrame()
+            ->setTransparencyColor(0xFF0000)
         ;
 
         $frame2 = "
@@ -53,7 +54,7 @@ class FeatureTest extends PHPUnit_Framework_TestCase
         $contents = $builder->getContents();
 
         $actual = Formatter::byteString2hexString($contents);
-        $expected = "47 49 46 38 39 61 06 00 06 00 91 00 00 FF FF FF FF 00 00 00 00 00 00 00 00 21 F9 04 0C 32 00 00 00 2C 00 00 00 00 06 00 06 00 00 02 0A 84 11 71 A8 97 B9 A0 6B A6 00 00 21 F9 04 08 00 00 00 00 2C 02 00 03 00 04 00 03 00 00 02 04 8C 0D 70 56 00 3B";
+        $expected = "47 49 46 38 39 61 06 00 06 00 91 00 00 FF FF FF FF 00 00 00 00 00 00 00 00 21 F9 04 0D 32 00 01 00 2C 00 00 00 00 06 00 06 00 00 02 0A 84 11 71 A8 97 B9 A0 6B A6 00 00 21 F9 04 08 00 00 00 00 2C 02 00 03 00 04 00 03 00 00 02 04 8C 0D 70 56 00 3B";
 
         $this->assertEquals($expected, $actual);
     }

@@ -119,6 +119,7 @@ class GifBuilder
                     $colorTable,
                     $extension->getduration(),
                     $extension->getDisposalMethod(),
+                    $extension->getTransparencyColor(),
                     $extension->getWidth(),
                     $extension->getHeight(),
                     $extension->getLeft(),
