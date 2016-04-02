@@ -38,6 +38,7 @@ class ColorTable
             $key = count($this->colorIndexes);
             if ($key == 256) {
 #todo exception: too many colors
+return 0;
             }
 
             $this->colorIndexes[] = $color;

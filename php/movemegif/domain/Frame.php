@@ -1,6 +1,7 @@
 <?php
 
 namespace movemegif\domain;
+use movemegif\data\Formatter;
 
 /**
  * @author Patrick van Bergen
@@ -125,6 +126,29 @@ class Frame
         if (count($array) != $this->width * $this->height) {
 #todo throw error
         }
+
+        return $this;
+    }
+
+    public function setPixelsFromCanvas($canvas)
+    {
+        $width = imagesx($canvas);
+        $height = imagesy($canvas);
+
+        $pixels = array();
+
+        for ($y = 0; $y < $height; $y++) {
+            for ($x = 0; $x < $width; $x++) {
+                $index = imagecolorat($canvas, $x, $y);
+                $rgb = imagecolorsforindex($canvas, $index);
+                $pixels[] =
+                    ($rgb['red'] << 16) +
+                    ($rgb['green'] << 8) +
+                    ($rgb['blue']);
+            }
+        }
+
+        $this->pixels = $pixels;
 
         return $this;
     }

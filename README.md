@@ -3,6 +3,7 @@
 An Animated GIF creation library in pure PHP
 
 Requires PHP 5.3 or higher.
+Requires GD library (use `apt-get install php5-gd` or similar, to install)
 
 Thanks a great deal to Matthew Flickinger for writing an awesome [GIF format explanation](http://www.matthewflickinger.com/lab/whatsinagif/index.html)
 

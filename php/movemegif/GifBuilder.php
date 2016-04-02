@@ -17,6 +17,8 @@ use movemegif\domain\Frame;
  */
 class GifBuilder
 {
+    const MOVEMEGIF_SIGNATURE = "Created with movemegif";
+
     /** @var Extension[] */
     private $extensions = array();
 
@@ -148,7 +150,9 @@ class GifBuilder
         $comments = $this->comments;
 
         // prepend our signature
-        array_unshift($comments, "movemegif");
+        if (array_search(self::MOVEMEGIF_SIGNATURE, $comments) === false) {
+            array_unshift($comments, self::MOVEMEGIF_SIGNATURE);
+        }
 
         foreach ($comments as $comment) {
             $extension = new CommentExtension($comment);
@@ -165,10 +169,10 @@ class GifBuilder
             $trailer->getContents();
     }
 
-    public function output()
+    public function output($fileName = 'moveme.gif')
     {
         header('Content-type: image/gif');
-        header('Content-disposition: inline; filename="name.gif"');
+        header('Content-disposition: inline; filename="' . $fileName . '"');
 
         echo $this->getContents();
     }
