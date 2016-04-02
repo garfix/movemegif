@@ -1,5 +1,6 @@
 <?php
 use movemegif\data\Formatter;
+use movemegif\domain\StringCanvas;
 use movemegif\GifBuilder;
 
 require_once __DIR__ . '/../php/autoloader.php';
@@ -18,7 +19,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 {
     public function testGlobalColorTable()
     {
-        $pixelIndexes = "
+        $indexString = "
             1 1 2 2
             1 3 3 2
             2 3 3 1
@@ -34,12 +35,12 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $builder = new GifBuilder(4, 4);
         $builder->setBackgroundColor(0xFFFFFF);
 
-        $builder->addFrame(4, 4)
-            ->setPixelsAsIndexedColors($pixelIndexes, $index2color)
+        $builder->addFrame()
+            ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
             ->setUseLocalColorTable(false)
             ->setDuration(50);
 
-        $pixelIndexes = "
+        $indexString = "
             4 4 5 5
             4 3 3 5
             5 3 3 4
@@ -52,8 +53,8 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
             '5' => 0x808080,
         );
 
-        $builder->addFrame(4, 4)
-            ->setPixelsAsIndexedColors($pixelIndexes, $index2color)
+        $builder->addFrame()
+            ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
             ->setUseLocalColorTable(false)
             ->setDuration(50);
 
@@ -67,14 +68,14 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 
     public function testLocalColorTables()
     {
-        $pixelIndexes = "
+        $indexString = "
             1 1 2 2
             1 3 3 2
             2 3 3 1
             2 2 1 1
         ";
 
-        $colorTable = array(
+        $index2color = array(
             '1' => 0xFF0000,
             '2' => 0xFFFFFF,
             '3' => 0x000000,
@@ -82,26 +83,26 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 
         $builder = new GifBuilder(4, 4);
 
-        $builder->addFrame(4, 4)
-            ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
+        $builder->addFrame()
+            ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
             ->setUseLocalColorTable(true)
             ->setDuration(50);
 
-        $pixelIndexes = "
+        $indexString = "
             4 4 5 5
             4 3 3 5
             5 3 3 4
             5 5 4 4
         ";
 
-        $colorTable = array(
+        $index2color = array(
             '3' => 0x000000,
             '4' => 0x0000FF,
             '5' => 0x808080,
         );
 
-        $builder->addFrame(4, 4)
-            ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
+        $builder->addFrame()
+            ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
             ->setUseLocalColorTable(true)
             ->setDuration(50);
 
@@ -118,14 +119,14 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
      */
     public function testUseBackgroundColorNotInGlobalColorTable()
     {
-        $pixelIndexes = "
+        $indexString = "
             1 1 2 2
             1 3 3 2
             2 3 3 1
             2 2 1 1
         ";
 
-        $colorTable = array(
+        $index2color = array(
             '1' => 0xFF0000,
             '2' => 0xFFFFFF,
             '3' => 0x000000,
@@ -135,7 +136,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
         $builder->setBackgroundColor(0x0A0B0C);
 
         $builder->addFrame()
-            ->setPixelsAsIndexedColors($pixelIndexes, $colorTable)
+            ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
             ->setUseLocalColorTable(true);
 
         $contents = $builder->getContents();

@@ -1,5 +1,6 @@
 <?php
 
+use movemegif\domain\StringCanvas;
 use movemegif\exception\MovemegifException;
 use movemegif\GifBuilder;
 
@@ -26,7 +27,7 @@ class ExceptionTest extends PHPUnit_Framework_TestCase
         }
 
         $builder = new GifBuilder(10, 10);
-        $builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $index2color);
+        $builder->addFrame()->setCanvas(new StringCanvas(10, 10, $pixelIndexes, $index2color));
 
         try {
             $builder->getContents();
@@ -38,7 +39,7 @@ class ExceptionTest extends PHPUnit_Framework_TestCase
         $index2color[256] = 256;
 
         $builder = new GifBuilder(10, 10);
-        $builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $index2color);
+        $builder->addFrame()->setCanvas(new StringCanvas(10, 10, $pixelIndexes, $index2color));
 
         try {
             $builder->getContents();

@@ -1,7 +1,6 @@
 <?php
 
 namespace movemegif\domain;
-use movemegif\data\Formatter;
 
 /**
  * @author Patrick van Bergen
@@ -13,8 +12,8 @@ class Frame
     const DISPOSAL_RESTORE_TO_BG_COLOR = 2;
     const DISPOSAL_RESTORE_TO_PREVIOUS_FRAME = 3;
 
-    /** @var int[] An array of 0xRRGGBB colors */
-    private $pixels = null;
+    /** @var Canvas */
+    private $canvas = null;
 
     /** @var bool  */
     private $useLocalColorTable = false;
@@ -34,18 +33,28 @@ class Frame
     /** @var int Frame image top position in [0..65535] */
     private $top;
 
-    /** @var int Frame image width in [0..65535] */
-    private $width;
-
-    /** @var int Frame image height in [0..65535] */
-    private $height;
-
-    public function __construct($width, $height, $left, $top)
+    /**
+     * Sets the left pixel position of this frame's canvas with respect to the GIF's canvas.
+     *
+     * @param int $left
+     * @return $this
+     */
+    public function setLeft($left)
     {
-        $this->width = $width;
-        $this->height = $height;
         $this->left = $left;
+        return $this;
+    }
+
+    /**
+     * Sets the top pixel position of this frame's canvas with respect to the GIF's canvas.
+     *
+     * @param $top
+     * @return $this;
+     */
+    public function setTop($top)
+    {
         $this->top = $top;
+        return $this;
     }
 
     /**
@@ -69,7 +78,7 @@ class Frame
      */
     public function getWidth()
     {
-        return $this->width;
+        return $this->getCanvas()->getWidth();
     }
 
     /**
@@ -77,79 +86,16 @@ class Frame
      */
     public function getHeight()
     {
-        return $this->height;
+        return $this->getCanvas()->getHeight();
     }
 
     /**
-     * Enter this image's data as a string of indexes and a indexed color table.
-     *
-     * For example:
-     *
-     * $pixels = "
-     *     1 1 2 2
-     *     1 0 0 2
-     *     2 2 1 1
-     * ";
-     *
-     * $colors = array(
-     *     0 => 0xFFFFFF,
-     *     1 => 0xFF0000,
-     *     2 => 0x0000FF
-     * )
-     *
-     * Each color is coded as 0x00RRGGBB (unused, red, green, blue bytes)
-     *
-     * @param string $pixelIndexes A whitespace separated string of color indexes.
-     * @param int[] $index2color An index 2 RGB color map.
+     * @param Canvas $canvas
      * @return $this
      */
-    public function setPixelsAsIndexedColors($pixelIndexes, array $index2color)
+    public function setCanvas(Canvas $canvas)
     {
-        $array = array();
-
-        preg_match_all('/(\d+)/', $pixelIndexes, $matches);
-
-        foreach ($matches[1] as $match) {
-
-            $index = (int)$match;
-
-            if (array_key_exists($index, $index2color)) {
-                $array[] = $index2color[$index];
-            } else {
-#todo
-            }
-
-        }
-
-        $this->pixels = $array;
-
-        if (count($array) != $this->width * $this->height) {
-#todo throw error
-        }
-
-        return $this;
-    }
-
-    public function setPixelsFromCanvas($canvas)
-    {
-        $width = imagesx($canvas);
-        $height = imagesy($canvas);
-
-        $pixels = array();
-
-        for ($y = 0; $y < $height; $y++) {
-            for ($x = 0; $x < $width; $x++) {
-                $index = imagecolorat($canvas, $x, $y);
-                $rgb = imagecolorsforindex($canvas, $index);
-                $pixels[] =
-                    ($rgb['red'] << 16) +
-                    ($rgb['green'] << 8) +
-                    ($rgb['blue']);
-            }
-        }
-
-        $this->pixels = $pixels;
-
+        $this->canvas = $canvas;
         return $this;
     }
 
@@ -179,7 +125,7 @@ class Frame
     /**
      * @return int The time this frame is visible (in 1/100 seconds).
      */
-    public function getduration()
+    public function getDuration()
     {
         return $this->duration;
     }
@@ -228,11 +174,19 @@ class Frame
         return $this->disposalMethod;
     }
 
+    /**
+     * @return int[]
+     */
     public function getPixels()
     {
-        if ($this->pixels === null) {
+        return $this->getCanvas()->getPixels();
+    }
 
-            $this->setPixelsAsIndexedColors("
+    public function getCanvas()
+    {
+        if (!$this->canvas) {
+
+            $indexString = "
                 1 1 1 1 1 2 2 2 2 2
                 1 1 1 1 1 2 2 2 2 2
                 1 1 1 1 1 2 2 2 2 2
@@ -242,19 +196,20 @@ class Frame
                 2 2 2 0 0 0 0 1 1 1
                 2 2 2 2 2 1 1 1 1 1
                 2 2 2 2 2 1 1 1 1 1
-                2 2 2 2 2 1 1 1 1 1",
+                2 2 2 2 2 1 1 1 1 1";
 
-                array(
-                    '0' => 0xFFFFFF,
-                    '1' => 0xFF0000,
-                    '2' => 0x0000FF,
-                    '3' => 0x000000
-                )
+            $index2color = array(
+                '0' => 0xFFFFFF,
+                '1' => 0xFF0000,
+                '2' => 0x0000FF,
+                '3' => 0x000000
             );
+
+            $this->canvas = new StringCanvas(10, 10, $indexString, $index2color);
 
         }
 
-        return $this->pixels;
+        return $this->canvas;
     }
 
     /**

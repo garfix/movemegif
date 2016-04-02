@@ -1,6 +1,7 @@
 <?php
 
 use movemegif\data\Formatter;
+use movemegif\domain\StringCanvas;
 use movemegif\GifBuilder;
 
 require_once __DIR__ . '/../php/autoloader.php';
@@ -34,7 +35,7 @@ class FeatureTest extends PHPUnit_Framework_TestCase
 
         $builder = new GifBuilder(6, 6);
         $builder->addFrame()
-            ->setPixelsAsIndexedColors($frame1, $index2color)
+            ->setCanvas(new StringCanvas(6, 6, $frame1, $index2color))
             ->setDuration(50)
             ->setDisposalToOverwriteWithPreviousFrame()
             ->setTransparencyColor(0xFF0000)
@@ -46,8 +47,8 @@ class FeatureTest extends PHPUnit_Framework_TestCase
             2 2 2 2
         ";
 
-        $builder->addFrame(4, 3, 2, 3)
-            ->setPixelsAsIndexedColors($frame2, $index2color)
+        $builder->addFrame()->setLeft(2)->setTop(3)
+            ->setCanvas(new StringCanvas(4, 3, $frame2, $index2color))
             ->setDisposalToOverwriteWithBackgroundColor()
         ;
 

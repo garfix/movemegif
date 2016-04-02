@@ -45,18 +45,11 @@ class GifBuilder
     }
 
     /**
-     * @param int $width Width in pixels (when left out, the width of the GIF's canvas is presumed)
-     * @param int $height Similar to $width
-     * @param int $left
-     * @param int $top
      * @return Frame
      */
-    public function addFrame($width = null, $height = null, $left = 0, $top = 0)
+    public function addFrame()
     {
-        $width = ($width !== null ? $width : $this->width);
-        $height = ($height !== null ? $height : $this->height);
-
-        $frame = new Frame($width, $height, $left, $top);
+        $frame = new Frame();
         $this->extensions[] = $frame;
         return $frame;
     }
@@ -131,22 +124,24 @@ class GifBuilder
 
             if ($extension instanceof Frame) {
 
-                if ($extension->usesLocalColorTable()) {
+                $frame = $extension;
+
+                if ($frame->usesLocalColorTable()) {
                     $colorTable = new ColorTable(true);
                 } else {
                     $colorTable = $globalColorTable;
                 }
 
                 $graphic = new GraphicExtension(
-                    $extension->getPixels(),
+                    $frame->getPixels(),
                     $colorTable,
-                    $extension->getduration(),
-                    $extension->getDisposalMethod(),
-                    $extension->getTransparencyColor(),
-                    $extension->getWidth(),
-                    $extension->getHeight(),
-                    $extension->getLeft(),
-                    $extension->getTop()
+                    $frame->getduration(),
+                    $frame->getDisposalMethod(),
+                    $frame->getTransparencyColor(),
+                    $frame->getWidth(),
+                    $frame->getHeight(),
+                    $frame->getLeft(),
+                    $frame->getTop()
                 );
 
                 $extensionContents .= $graphic->getContents();
@@ -180,8 +175,8 @@ class GifBuilder
      * Writes
      * Outputs a string of bytes forming an animated GIF image (GIF 89a).
      *
+     * @param string $fileName
      * @return string
-     * @throws MovemegifException
      */
     public function output($fileName = 'moveme.gif')
     {

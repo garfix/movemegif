@@ -1,6 +1,7 @@
 <?php
 
 use movemegif\data\Formatter;
+use movemegif\domain\StringCanvas;
 use movemegif\GifBuilder;
 
 require_once __DIR__ . '/../php/autoloader.php';
@@ -35,8 +36,10 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
             '3' => 0x000000
         );
 
+        $canvas = new StringCanvas(10, 10, $pixelIndexes, $index2color);
+
         $builder = new GifBuilder(10, 10);
-        $builder->addFrame(10, 10)->setPixelsAsIndexedColors($pixelIndexes, $index2color)->setUseLocalColorTable(false);
+        $builder->addFrame()->setCanvas($canvas)->setUseLocalColorTable(false);
 
         $contents = $builder->getContents();
 
