@@ -155,11 +155,12 @@ class Frame
 
     /**
      * Create a custom color table for this frame alone (true) or merge colors in the global color table (false).
+     * By default this is set to false (i.e. all frames share the global color table).
      *
      * @param boolean $useLocalColorTable
      * @return $this
      */
-    public function setUseLocalColorTable($useLocalColorTable)
+    public function setUseLocalColorTable($useLocalColorTable = true)
     {
         $this->useLocalColorTable = $useLocalColorTable;
         return $this;

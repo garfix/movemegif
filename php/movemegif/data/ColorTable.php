@@ -39,7 +39,7 @@ class ColorTable
         if ($key === false) {
             $key = count($this->colorIndexes);
             if ($key == 256) {
-                throw new TooManyColorsException();
+                throw TooManyColorsException::create($this->isLocal());
             }
 
             $this->colorIndexes[] = $color;
