@@ -11,6 +11,7 @@ use movemegif\data\LogicalScreenDescriptor;
 use movemegif\data\NetscapeApplicationBlock;
 use movemegif\data\Trailer;
 use movemegif\domain\Frame;
+use movemegif\exception\MovemegifException;
 
 /**
  * @author Patrick van Bergen
@@ -104,6 +105,12 @@ class GifBuilder
         $this->comments[] = $comment;
     }
 
+    /**
+     * Returns a string of bytes forming an animated GIF image (GIF 89a).
+     *
+     * @return string
+     * @throws MovemegifException
+     */
     public function getContents()
     {
         $globalColorTable = new ColorTable(false);
@@ -169,11 +176,21 @@ class GifBuilder
             $trailer->getContents();
     }
 
+    /**
+     * Writes
+     * Outputs a string of bytes forming an animated GIF image (GIF 89a).
+     *
+     * @return string
+     * @throws MovemegifException
+     */
     public function output($fileName = 'moveme.gif')
     {
+        // get contents _before_ writing headers, so that any exceptions are shown properly
+        $contents = $this->getContents();
+
         header('Content-type: image/gif');
         header('Content-disposition: inline; filename="' . $fileName . '"');
 
-        echo $this->getContents();
+        echo $contents;
     }
 }

@@ -111,7 +111,7 @@ class Frame
 
         foreach ($matches[1] as $match) {
 
-            $index = $match[0];
+            $index = (int)$match;
 
             if (array_key_exists($index, $index2color)) {
                 $array[] = $index2color[$index];

@@ -1,6 +1,7 @@
 <?php
 
 namespace movemegif\data;
+use movemegif\exception\TooManyColorsException;
 
 /**
  * @author Patrick van Bergen
@@ -29,6 +30,7 @@ class ColorTable
     /**
      * @param $color
      * @return int An index
+     * @throws TooManyColorsException
      */
     public function getColorIndex($color)
     {
@@ -37,8 +39,7 @@ class ColorTable
         if ($key === false) {
             $key = count($this->colorIndexes);
             if ($key == 256) {
-#todo exception: too many colors
-return 0;
+                throw new TooManyColorsException();
             }
 
             $this->colorIndexes[] = $color;
