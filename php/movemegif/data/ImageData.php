@@ -27,7 +27,7 @@ class ImageData
         /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
         $lzwMinimumCodeSize = $this->getMinimumCodeSize($this->colorTableSize);
 
-        $codes = $this->compressCodes($this->gifLzwCompress(implode('', array_map('chr', $this->pixelColorIndexes)), $this->colorTableSize), $this->colorTableSize);
+        $codes = $this->gifLzwCompress(implode('', array_map('chr', $this->pixelColorIndexes)), $this->colorTableSize);
 
         return chr($lzwMinimumCodeSize) . DataSubBlock::createBlocks($codes) . DataSubBlock::createBlocks('');
     }
@@ -39,8 +39,7 @@ class ImageData
      */
     function gifLzwCompress($uncompressedString, $colorIndexCount)
     {
-        // the resulting compressed string
-        $resultCodes = array();
+        $compressedBytes = new CompressedByteString($colorIndexCount);
 
         // initialize sequence 2 code map
         list($sequence2code, $dictSize) = $this->createSequence2CodeMap($colorIndexCount);
@@ -54,9 +53,9 @@ class ImageData
         $savedDictSize = $dictSize;
 
         // start with a clear code
-        $resultCodes[] = $clearCode;
+        $compressedBytes->addCode($clearCode);
 
-$passed = false;
+//$passed = false;
 $q = 0;
 
         $previousSequence = "";
@@ -83,8 +82,10 @@ if (0){//$passed) {
     $q = $q ? 0 : 1;
 } else {
                 // this sequence was not found, store the longest sequence found to the result
-                $resultCodes[] = $sequence2code[$previousSequence];
+                $compressedBytes->addCode($sequence2code[$previousSequence]);
+
 }
+
                 // store the new sequence to the map
                 $sequence2code[$sequence] = $dictSize++;
 
@@ -94,7 +95,9 @@ if (0){//$passed) {
                 // the dictionary may hold only 2^12 items
                 if ($dictSize == self::MAX_DICTIONARY_SIZE) {
 
-$passed = true;
+//$passed = true;
+
+                    $compressedBytes->flush();
 
                     // reset the dictionary
                     $sequence2code = $savedMap;
@@ -102,19 +105,19 @@ $passed = true;
                     $previousSequence = '';
 
                     // insert a clear code
-                    $resultCodes[] = $clearCode;
+                    $compressedBytes->addCode($clearCode);
                 }
             }
         }
 
         if ($previousSequence !== "") {
-            $resultCodes[] = $sequence2code[$previousSequence];
+            $compressedBytes->addCode($sequence2code[$previousSequence]);
         }
 
         // end with the end of information code
-        $resultCodes[] = $endOfInformationCode;
+        $compressedBytes->addCode($endOfInformationCode);
 
-        return $resultCodes;
+        return $compressedBytes->getByteString();
     }
 
     /**
@@ -135,47 +138,6 @@ $passed = true;
         }
 
         return array($sequence2code, $dictSize);
-    }
-
-    /**
-     * @param array $codes
-     * @param int $colorCount A power of two.
-     * @return string
-     */
-    private function compressCodes(array $codes, $colorCount)
-    {
-        $compressedBytes = new CompressedByteString();
-
-        $bitsPerPixel = $this->getMinimumCodeSize($colorCount); // 8
-
-        $startRunningCode = Math::firstPowerOfTwo($colorCount) ; //$startRunningCode = 256;
-        $runningBits = $bitsPerPixel + 1; // bits per pixel + 1
-        $runningCode = $startRunningCode;
-        $maxCode1 = 1 << $runningBits;
-
-        foreach ($codes as $i => $code) {
-
-            $compressedBytes->bla($code, $runningBits);
-
-            // increase code size
-            $runningCode++;
-            if ($runningCode >= $maxCode1) {
-                $runningBits++;
-                $maxCode1 = 1 << $runningBits;
-            }
-
-            if ($code == 256 && $i != 0) {
-            //if ($runningCode >= 4095) {
-                $runningCode = $startRunningCode;
-                $runningBits = $bitsPerPixel + 1;
-                $maxCode1 = 1 << $runningBits;
-
-            }
-        }
-
-        $bytes = $compressedBytes->getByteString();
-
-        return $bytes;
     }
 
     private function getMinimumCodeSize($colorCount)
