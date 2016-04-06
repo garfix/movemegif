@@ -42,7 +42,11 @@ class ImageData
         $resultCodes = array();
 
         // initialize sequence 2 code map
-        list($sequence2code, $dictSize, $clearCode, $endOfInformationCode) = $this->createSequence2CodeMap($colorIndexCount);
+        list($sequence2code, $dictSize) = $this->createSequence2CodeMap($colorIndexCount);
+
+        // define control codes
+        $clearCode = $dictSize++;
+        $endOfInformationCode = $dictSize++;
 
         // save the initial map
         $savedMap = $sequence2code;
@@ -51,38 +55,54 @@ class ImageData
         // start with a clear code
         $resultCodes[] = $clearCode;
 
+$passed = false;
+$q = 0;
+
         $previousSequence = "";
-        for ($i = 0; $i < strlen($uncompressedString); $i++) {
+        $byteCount = strlen($uncompressedString);
+        for ($i = 0; $i < $byteCount; $i++) {
 
             $colorIndex = $uncompressedString[$i];
+//$colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
             $sequence = $previousSequence . $colorIndex;
 
-            if (array_key_exists($sequence, $sequence2code)) {
+            if (isset($sequence2code[$sequence])){//} array_key_exists($sequence, $sequence2code)) {
 
                 // sequence found, next run, try to find an even longer sequence
                 $previousSequence .= $colorIndex;
 
             } else {
 
+if (0){//$passed) {
+//if (1) {
+    //$resultCodes[] = $sequence2code[$q ? chr(200) : chr(305)];
+//    $resultCodes[] = $sequence2code[$q ? chr(200) : 'NUL'];
+    //$resultCodes[] = $q ? 0 : 10;
+    $resultCodes[] = $q ? 0 : 263;
+    $q = $q ? 0 : 1;
+} else {
                 // this sequence was not found, store the longest sequence found to the result
                 $resultCodes[] = $sequence2code[$previousSequence];
-
-                // the dictionary may hold only 2^12 items
-                if ($dictSize == 4096) {
-
-                    // reset the dictionary
-                    $sequence2code = $savedMap;
-                    $dictSize = $savedDictSize;
-
-                    // insert a clear code
-                    $resultCodes[] = $clearCode;
-                }
-
+}
                 // store the new sequence to the map
                 $sequence2code[$sequence] = $dictSize++;
 
                 // start a new sequence
                 $previousSequence = $colorIndex;
+
+                // the dictionary may hold only 2^12 items
+                if ($dictSize == 4096) {
+
+$passed = true;
+
+                    // reset the dictionary
+                    $sequence2code = $savedMap;
+                    $dictSize = $savedDictSize;
+                    $previousSequence = '';
+
+                    // insert a clear code
+                    $resultCodes[] = $clearCode;
+                }
             }
         }
 
@@ -109,16 +129,11 @@ class ImageData
 
         // fill up the map with entries up to a power of 2
         for ($colorIndex = 0; $colorIndex < $colorIndexCount; $colorIndex++) {
+//            $sequence2code[$colorIndex == 0 ? 'NUL' : chr($colorIndex)] = $dictSize++;
             $sequence2code[chr($colorIndex)] = $dictSize++;
         }
 
-        // define control codes
-        $clearCode = $dictSize++;
-        $endOfInformationCode = $dictSize++;
-        $sequence2code[chr($clearCode)] = 'Clear Code';
-        $sequence2code[chr($endOfInformationCode)] = 'End of Information Code';
-
-        return array($sequence2code, $dictSize, $clearCode, $endOfInformationCode);
+        return array($sequence2code, $dictSize);
     }
 
     /**
@@ -130,20 +145,25 @@ class ImageData
     {
         /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
         $lzwMinimumCodeSize = $this->getMinimumCodeSize($colorCount);
-        $firstCodeSize = $lzwMinimumCodeSize + 1;
-        $currentCodeSize = $firstCodeSize;
+        // min code size = 8
+        // first code size = 9
+        //$firstCodeSize = $lzwMinimumCodeSize + 1;
+        //$runningBits = $firstCodeSize - 1;
+        $bitsPerPixel = $lzwMinimumCodeSize; // 8
 
         $bytes = '';
         $byte = 0;
         $powerOfTwo = 1;
 
-        $p = 0;
-        $bitCombinationCount = pow(2, $currentCodeSize - 1);
+$startRunningCode = Math::firstPowerOfTwo($colorCount) ; //$startRunningCode = 256;
+$runningBits = $bitsPerPixel + 1; // bits per pixel + 1
+$runningCode = $startRunningCode;
+        $maxCode1 = 1 << $runningBits;
 
         foreach ($codes as $i => $code) {
 
             $bits = $code;
-            for ($b = 0; $b < $currentCodeSize; $b++) {
+            for ($b = 0; $b < $runningBits; $b++) {
 
                 if ($powerOfTwo == 256) {
 
@@ -169,11 +189,18 @@ class ImageData
             }
 
             // increase code size
-            $p++;
-            if ($p == $bitCombinationCount) {
-                $currentCodeSize++;
-                $p = 0;
-                $bitCombinationCount *= 2;
+            $runningCode++;
+            if ($runningCode >= $maxCode1) {
+                $runningBits++;
+                $maxCode1 = 1 << $runningBits;
+            }
+
+            if ($code == 256 && $i != 0) {
+            //if ($runningCode >= 4095) {
+                $runningCode = $startRunningCode;
+                $runningBits = $bitsPerPixel + 1;
+                $maxCode1 = 1 << $runningBits;
+
             }
         }
 

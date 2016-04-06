@@ -188,4 +188,14 @@ class GifBuilder
 
         echo $contents;
     }
+
+    /**
+     * Creates a GIF image file from the present information.
+     *
+     * @param string $filePath
+     */
+    public function saveToFile($filePath)
+    {
+        file_put_contents($filePath, $this->getContents());
+    }
 }

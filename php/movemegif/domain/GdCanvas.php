@@ -7,6 +7,7 @@ namespace movemegif\domain;
  */
 class GdCanvas implements Canvas
 {
+    /** @var resource  */
     private $resource;
 
     public function __construct($width, $height)
@@ -14,6 +15,9 @@ class GdCanvas implements Canvas
         $this->resource = imagecreate($width, $height);
     }
 
+    /**
+     * @return resource
+     */
     public function getResource()
     {
         return $this->resource;
@@ -25,15 +29,22 @@ class GdCanvas implements Canvas
         $height = imagesy($this->resource);
 
         $pixels = array();
+        $index2color = array();
 
         for ($y = 0; $y < $height; $y++) {
             for ($x = 0; $x < $width; $x++) {
+
                 $index = imagecolorat($this->resource, $x, $y);
-                $rgb = imagecolorsforindex($this->resource, $index);
-                $pixels[] =
-                    ($rgb['red'] << 16) +
-                    ($rgb['green'] << 8) +
-                    ($rgb['blue']);
+
+                if (!isset($index2color[$index])) {
+
+                    $rgb = imagecolorsforindex($this->resource, $index);
+                    $index2color[$index] = ($rgb['red'] << 16) + ($rgb['green'] << 8) + ($rgb['blue']);
+                }
+
+                $color = $index2color[$index];
+
+                $pixels[] = $color;
             }
         }
 
