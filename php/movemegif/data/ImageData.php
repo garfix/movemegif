@@ -8,6 +8,7 @@ namespace movemegif\data;
 class ImageData
 {
     const NUMBER_OF_SPECIAL_CODES = 2;
+    const MAX_DICTIONARY_SIZE = 4096;
 
     /** @var int[] An array of color indexes */
     private $pixelColorIndexes;
@@ -63,7 +64,7 @@ $q = 0;
         for ($i = 0; $i < $byteCount; $i++) {
 
             $colorIndex = $uncompressedString[$i];
-//$colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
+$colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
             $sequence = $previousSequence . $colorIndex;
 
             if (isset($sequence2code[$sequence])){//} array_key_exists($sequence, $sequence2code)) {
@@ -91,7 +92,7 @@ if (0){//$passed) {
                 $previousSequence = $colorIndex;
 
                 // the dictionary may hold only 2^12 items
-                if ($dictSize == 4096) {
+                if ($dictSize == self::MAX_DICTIONARY_SIZE) {
 
 $passed = true;
 
@@ -129,8 +130,8 @@ $passed = true;
 
         // fill up the map with entries up to a power of 2
         for ($colorIndex = 0; $colorIndex < $colorIndexCount; $colorIndex++) {
-//            $sequence2code[$colorIndex == 0 ? 'NUL' : chr($colorIndex)] = $dictSize++;
-            $sequence2code[chr($colorIndex)] = $dictSize++;
+            $sequence2code[$colorIndex == 0 ? 'NUL' : chr($colorIndex)] = $dictSize++;
+//            $sequence2code[chr($colorIndex)] = $dictSize++;
         }
 
         return array($sequence2code, $dictSize);
@@ -143,50 +144,18 @@ $passed = true;
      */
     private function compressCodes(array $codes, $colorCount)
     {
-        /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
-        $lzwMinimumCodeSize = $this->getMinimumCodeSize($colorCount);
-        // min code size = 8
-        // first code size = 9
-        //$firstCodeSize = $lzwMinimumCodeSize + 1;
-        //$runningBits = $firstCodeSize - 1;
-        $bitsPerPixel = $lzwMinimumCodeSize; // 8
+        $compressedBytes = new CompressedByteString();
 
-        $bytes = '';
-        $byte = 0;
-        $powerOfTwo = 1;
+        $bitsPerPixel = $this->getMinimumCodeSize($colorCount); // 8
 
-$startRunningCode = Math::firstPowerOfTwo($colorCount) ; //$startRunningCode = 256;
-$runningBits = $bitsPerPixel + 1; // bits per pixel + 1
-$runningCode = $startRunningCode;
+        $startRunningCode = Math::firstPowerOfTwo($colorCount) ; //$startRunningCode = 256;
+        $runningBits = $bitsPerPixel + 1; // bits per pixel + 1
+        $runningCode = $startRunningCode;
         $maxCode1 = 1 << $runningBits;
 
         foreach ($codes as $i => $code) {
 
-            $bits = $code;
-            for ($b = 0; $b < $runningBits; $b++) {
-
-                if ($powerOfTwo == 256) {
-
-                    // byte full
-                    $bytes .= chr($byte);
-
-                    // new byte
-                    $byte = 0;
-
-                    // back to rightmost bit
-                    $powerOfTwo = 1;
-                }
-
-                // rightmost bit of code = 1?
-                if ($bits & 1) {
-
-                    // add it to result
-                    $byte += $powerOfTwo;
-                }
-
-                $bits >>= 1;
-                $powerOfTwo <<= 1;
-            }
+            $compressedBytes->bla($code, $runningBits);
 
             // increase code size
             $runningCode++;
@@ -204,9 +173,7 @@ $runningCode = $startRunningCode;
             }
         }
 
-        if ($powerOfTwo > 1) {
-            $bytes .= chr($byte);
-        }
+        $bytes = $compressedBytes->getByteString();
 
         return $bytes;
     }
