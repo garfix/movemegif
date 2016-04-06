@@ -55,7 +55,7 @@ class ImageData
         // start with a clear code
         $compressedBytes->addCode($clearCode);
 
-//$passed = false;
+$passed = false;
 $q = 0;
 
         $previousSequence = "";
@@ -73,12 +73,8 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
 
             } else {
 
-if (0){//$passed) {
-//if (1) {
-    //$resultCodes[] = $sequence2code[$q ? chr(200) : chr(305)];
-//    $resultCodes[] = $sequence2code[$q ? chr(200) : 'NUL'];
-    //$resultCodes[] = $q ? 0 : 10;
-    $resultCodes[] = $q ? 0 : 263;
+if ($passed) {
+    $compressedBytes->addCode($q ? 0 : 263);
     $q = $q ? 0 : 1;
 } else {
                 // this sequence was not found, store the longest sequence found to the result
@@ -95,9 +91,7 @@ if (0){//$passed) {
                 // the dictionary may hold only 2^12 items
                 if ($dictSize == self::MAX_DICTIONARY_SIZE) {
 
-//$passed = true;
-
-                    $compressedBytes->flush();
+$passed = true;
 
                     // reset the dictionary
                     $sequence2code = $savedMap;
@@ -106,6 +100,8 @@ if (0){//$passed) {
 
                     // insert a clear code
                     $compressedBytes->addCode($clearCode);
+
+                    $compressedBytes->flush();
                 }
             }
         }

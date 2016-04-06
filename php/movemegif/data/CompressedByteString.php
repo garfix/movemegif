@@ -10,21 +10,23 @@ class CompressedByteString
     private $bytes = '';
     private $byte = 0;
     private $powerOfTwo = 1;
+
     private $startRunningCode;
-    private $bitsPerPixel;
     private $runningCode;
+
+    private $bitsPerPixel;
     private $runningBits;
-    private $maxCode1;
+
+    private $maxCode;
 
     public function __construct($colorIndexCount)
     {
         $this->bitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
         $this->startRunningCode = Math::firstPowerOfTwo($colorIndexCount);
 
-        $this->runningCode = $this->startRunningCode;
         $this->runningBits = $this->bitsPerPixel + 1;
         $this->runningCode = $this->startRunningCode;
-        $this->maxCode1 = 1 << $this->runningBits;
+        $this->maxCode = 1 << $this->runningBits;
     }
 
     public function addCode($bits)
@@ -54,28 +56,26 @@ class CompressedByteString
             $this->powerOfTwo <<= 1;
         }
 
-// increase code size
+        // increase code size
         $this->runningCode++;
-        if ($this->runningCode >= $this->maxCode1) {
+        if ($this->runningCode >= $this->maxCode) {
             $this->runningBits++;
-            $this->maxCode1 = 1 << $this->runningBits;
+            $this->maxCode = 1 << $this->runningBits;
         }
-
     }
 
     public function flush()
     {
-//if ($runningCode >= 4095) {
         $this->runningCode = $this->startRunningCode;
         $this->runningBits = $this->bitsPerPixel + 1;
-        $this->maxCode1 = 1 << $this->runningBits;
-
+        $this->maxCode = 1 << $this->runningBits;
     }
 
     public function getByteString()
     {
-
+        // flush current byte
         if ($this->powerOfTwo > 1) {
+            $this->powerOfTwo = 0;
             $this->bytes .= chr($this->byte);
         }
 
