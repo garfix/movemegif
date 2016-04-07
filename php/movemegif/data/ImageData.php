@@ -40,15 +40,15 @@ class ImageData
     function gifLzwCompress($uncompressedString, $colorIndexCount)
     {
         // initialize sequence 2 code map
-        list($sequence2code, $dictSize) = $this->createSequence2CodeMap($colorIndexCount);
+        list($sequence2code, $runningCode) = $this->createSequence2CodeMap($colorIndexCount);
 
         // define control codes
-        $clearCode = $dictSize++;
-        $endOfInformationCode = $dictSize++;
+        $clearCode = $runningCode++;
+        $endOfInformationCode = $runningCode++;
 
         // save the initial map
         $savedMap = $sequence2code;
-        $savedDictSize = $dictSize;
+        $savedDictSize = $runningCode;
 
         $startBitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
         $startRunningCode = $clearCode;
@@ -89,24 +89,24 @@ if (0){//$passed) {
                 $previousSequence = $colorIndex;
 
                 // the dictionary may hold only 2^12 items
-                if ($dictSize >= self::MAX_DICTIONARY_SIZE) {
+                if ($runningCode >= self::MAX_DICTIONARY_SIZE) {
 
 $passed = true;
-
-                    // reset the dictionary
-                    $sequence2code = $savedMap;
-                    $dictSize = $savedDictSize;
-                    $previousSequence = '';
 
                     // insert a clear code
                     $compressedBytes->addCode($clearCode);
 
                     $compressedBytes->reset();
 
+                    // reset the dictionary
+                    $sequence2code = $savedMap;
+//$runningCode = $savedDictSize;
+//$previousSequence = '';
+
                 } else {
 
                     // store the new sequence to the map
-                    $sequence2code[$sequence] = $dictSize++;
+                    $sequence2code[$sequence] = $runningCode++;
 
                 }
             }
