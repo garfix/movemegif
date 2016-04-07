@@ -5,26 +5,25 @@ namespace movemegif\data;
 /**
  * @author Patrick van Bergen
  */
-class CompressedByteString
+class CompressedCodeString
 {
     private $bytes = '';
     private $byte = 0;
     private $powerOfTwo = 1;
 
-    private $startRunningCode;
-    private $runningCode;
-
-    private $bitsPerPixel;
+    private $startBitsPerPixel;
     private $runningBits;
 
+    private $startRunningCode;
+    private $runningCode;
     private $maxCode;
 
-    public function __construct($colorIndexCount)
+    public function __construct($startBitsPerPixel)
     {
-        $this->bitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
-        $this->startRunningCode = Math::firstPowerOfTwo($colorIndexCount);
+        $this->startBitsPerPixel = $startBitsPerPixel;
+        $this->runningBits = $startBitsPerPixel + 1;
 
-        $this->runningBits = $this->bitsPerPixel + 1;
+        $this->startRunningCode = 1 << $startBitsPerPixel;
         $this->runningCode = $this->startRunningCode;
         $this->maxCode = 1 << $this->runningBits;
     }
@@ -64,27 +63,23 @@ class CompressedByteString
         }
     }
 
-    public function flush()
+    public function reset()
     {
         $this->runningCode = $this->startRunningCode;
-        $this->runningBits = $this->bitsPerPixel + 1;
+        $this->runningBits = $this->startBitsPerPixel + 1;
         $this->maxCode = 1 << $this->runningBits;
     }
 
-    public function getByteString()
+    public function flush()
     {
-        // flush current byte
         if ($this->powerOfTwo > 1) {
             $this->powerOfTwo = 0;
             $this->bytes .= chr($this->byte);
         }
-
-        return $this->bytes;
     }
 
-    private function getMinimumCodeSize($colorCount)
+    public function getByteString()
     {
-        // The GIF spec requires a minimum of 2
-        return max(2, Math::minimumBits($colorCount));
+        return $this->bytes;
     }
 }

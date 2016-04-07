@@ -39,7 +39,8 @@ class ImageData
      */
     function gifLzwCompress($uncompressedString, $colorIndexCount)
     {
-        $compressedBytes = new CompressedByteString($colorIndexCount);
+        $bitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
+        $compressedBytes = new CompressedCodeString($bitsPerPixel);
 
         // initialize sequence 2 code map
         list($sequence2code, $dictSize) = $this->createSequence2CodeMap($colorIndexCount);
@@ -101,7 +102,7 @@ $passed = true;
                     // insert a clear code
                     $compressedBytes->addCode($clearCode);
 
-                    $compressedBytes->flush();
+                    $compressedBytes->reset();
                 }
             }
         }
@@ -112,6 +113,9 @@ $passed = true;
 
         // end with the end of information code
         $compressedBytes->addCode($endOfInformationCode);
+
+        // close down the code string
+        $compressedBytes->flush();
 
         return $compressedBytes->getByteString();
     }
