@@ -18,12 +18,12 @@ class CompressedCodeString
     private $runningCode;
     private $maxCode;
 
-    public function __construct($startBitsPerPixel)
+    public function __construct($startBitsPerPixel, $startRunningCode)
     {
         $this->startBitsPerPixel = $startBitsPerPixel;
         $this->runningBits = $startBitsPerPixel + 1;
 
-        $this->startRunningCode = 1 << $startBitsPerPixel;
+        $this->startRunningCode = $startRunningCode;
         $this->runningCode = $this->startRunningCode;
         $this->maxCode = 1 << $this->runningBits;
     }

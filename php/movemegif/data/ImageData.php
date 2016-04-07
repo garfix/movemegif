@@ -8,7 +8,7 @@ namespace movemegif\data;
 class ImageData
 {
     const NUMBER_OF_SPECIAL_CODES = 2;
-    const MAX_DICTIONARY_SIZE = 4096;
+    const MAX_DICTIONARY_SIZE = 4095;
 
     /** @var int[] An array of color indexes */
     private $pixelColorIndexes;
@@ -39,9 +39,6 @@ class ImageData
      */
     function gifLzwCompress($uncompressedString, $colorIndexCount)
     {
-        $bitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
-        $compressedBytes = new CompressedCodeString($bitsPerPixel);
-
         // initialize sequence 2 code map
         list($sequence2code, $dictSize) = $this->createSequence2CodeMap($colorIndexCount);
 
@@ -52,6 +49,11 @@ class ImageData
         // save the initial map
         $savedMap = $sequence2code;
         $savedDictSize = $dictSize;
+
+        $startBitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
+        $startRunningCode = $clearCode;
+//$startRunningCode = $endOfInformationCode + 1;
+        $compressedBytes = new CompressedCodeString($startBitsPerPixel, $startRunningCode);
 
         // start with a clear code
         $compressedBytes->addCode($clearCode);
@@ -74,7 +76,7 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
 
             } else {
 
-if ($passed) {
+if (0){//$passed) {
     $compressedBytes->addCode($q ? 0 : 263);
     $q = $q ? 0 : 1;
 } else {
@@ -83,14 +85,11 @@ if ($passed) {
 
 }
 
-                // store the new sequence to the map
-                $sequence2code[$sequence] = $dictSize++;
-
                 // start a new sequence
                 $previousSequence = $colorIndex;
 
                 // the dictionary may hold only 2^12 items
-                if ($dictSize == self::MAX_DICTIONARY_SIZE) {
+                if ($dictSize >= self::MAX_DICTIONARY_SIZE) {
 
 $passed = true;
 
@@ -103,6 +102,12 @@ $passed = true;
                     $compressedBytes->addCode($clearCode);
 
                     $compressedBytes->reset();
+
+                } else {
+
+                    // store the new sequence to the map
+                    $sequence2code[$sequence] = $dictSize++;
+
                 }
             }
         }
