@@ -48,18 +48,13 @@ class ImageData
 
         // save the initial map
         $savedMap = $sequence2code;
-        $savedDictSize = $runningCode;
-
         $startBitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
-        $startRunningCode = $clearCode;
+
 //$startRunningCode = $endOfInformationCode + 1;
-        $compressedBytes = new CompressedCodeString($startBitsPerPixel, $startRunningCode);
+        $compressedBytes = new CompressedCodeString($startBitsPerPixel, $runningCode);
 
         // start with a clear code
         $compressedBytes->addCode($clearCode);
-
-$passed = false;
-$q = 0;
 
         $previousSequence = "";
         $byteCount = strlen($uncompressedString);
@@ -76,22 +71,14 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
 
             } else {
 
-if (0){//$passed) {
-    $compressedBytes->addCode($q ? 0 : 263);
-    $q = $q ? 0 : 1;
-} else {
                 // this sequence was not found, store the longest sequence found to the result
                 $compressedBytes->addCode($sequence2code[$previousSequence]);
-
-}
 
                 // start a new sequence
                 $previousSequence = $colorIndex;
 
                 // the dictionary may hold only 2^12 items
                 if ($runningCode >= self::MAX_DICTIONARY_SIZE) {
-
-$passed = true;
 
                     // insert a clear code
                     $compressedBytes->addCode($clearCode);
