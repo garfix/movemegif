@@ -4,7 +4,7 @@ use movemegif\data\Formatter;
 use movemegif\domain\StringCanvas;
 use movemegif\GifBuilder;
 
-require_once __DIR__ . '/../php/autoloader.php';
+require_once __DIR__ . '/../../php/autoloader.php';
 
 /**
  * Integration test that builds a simple GIF.

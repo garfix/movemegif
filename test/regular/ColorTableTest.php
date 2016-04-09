@@ -3,7 +3,7 @@ use movemegif\data\Formatter;
 use movemegif\domain\StringCanvas;
 use movemegif\GifBuilder;
 
-require_once __DIR__ . '/../php/autoloader.php';
+require_once __DIR__ . '/../../php/autoloader.php';
 
 /**
  * Tests global color table shared by two frames.

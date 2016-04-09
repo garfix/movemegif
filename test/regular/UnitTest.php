@@ -3,7 +3,7 @@
 use movemegif\data\Formatter;
 use movemegif\data\NetscapeApplicationBlock;
 
-require_once __DIR__ . '/../php/autoloader.php';
+require_once __DIR__ . '/../../php/autoloader.php';
 
 /**
  * Tests Netscape's extension for looping.

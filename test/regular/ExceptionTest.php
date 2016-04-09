@@ -4,7 +4,7 @@ use movemegif\domain\StringCanvas;
 use movemegif\exception\MovemegifException;
 use movemegif\GifBuilder;
 
-require_once __DIR__ . '/../php/autoloader.php';
+require_once __DIR__ . '/../../php/autoloader.php';
 
 /**
  * Tests all exceptions
