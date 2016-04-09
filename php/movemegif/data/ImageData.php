@@ -33,6 +33,12 @@ class ImageData
     }
 
     /**
+     * Turns $uncompressedString into a compressed string of codes.
+     *
+     * The exact implementation of this algorithm is very fragile, and It contains ideas and implementation details from both
+     * http://www.matthewflickinger.com/lab/whatsinagif/lzw_image_data.asp and
+     * https://sourceforge.net/p/giflib/code/ci/master/tree/lib/egif_lib.c
+     *
      * @param string $uncompressedString
      * @param int $colorIndexCount A power of two.
      * @return array
@@ -50,21 +56,19 @@ class ImageData
         $savedMap = $sequence2code;
         $startBitsPerPixel = $this->getMinimumCodeSize($colorIndexCount);
 
-//$startRunningCode = $endOfInformationCode + 1;
-        $compressedBytes = new CompressedCodeString($startBitsPerPixel, $runningCode);
+        $compressedCodes = new CompressedCodeString($startBitsPerPixel, $runningCode);
 
         // start with a clear code
-        $compressedBytes->addCode($clearCode);
+        $compressedCodes->addCode($clearCode);
 
         $previousSequence = "";
         $byteCount = strlen($uncompressedString);
         for ($i = 0; $i < $byteCount; $i++) {
 
             $colorIndex = $uncompressedString[$i];
-$colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
             $sequence = $previousSequence . $colorIndex;
 
-            if (isset($sequence2code[$sequence])){//} array_key_exists($sequence, $sequence2code)) {
+            if (isset($sequence2code[$sequence])) {
 
                 // sequence found, next run, try to find an even longer sequence
                 $previousSequence .= $colorIndex;
@@ -72,45 +76,45 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
             } else {
 
                 // this sequence was not found, store the longest sequence found to the result
-                $compressedBytes->addCode($sequence2code[$previousSequence]);
+                $compressedCodes->addCode($sequence2code[$previousSequence]);
 
                 // start a new sequence
                 $previousSequence = $colorIndex;
 
                 // the dictionary may hold only 2^12 items
-                if ($compressedBytes->getRunningCode() >= self::MAX_DICTIONARY_SIZE) {
+                if ($compressedCodes->getRunningCode() >= self::MAX_DICTIONARY_SIZE) {
 
                     // insert a clear code
-                    $compressedBytes->addCode($clearCode);
+                    $compressedCodes->addCode($clearCode);
 
-                    $compressedBytes->reset();
+                    // reset the code and the number of bits representing them
+                    $compressedCodes->reset();
 
                     // reset the dictionary
                     $sequence2code = $savedMap;
-//$runningCode = $savedDictSize;
-//$previousSequence = '';
 
                 } else {
 
                     // store the new sequence to the map
-                    $sequence2code[$sequence] = $compressedBytes->getRunningCode();
-                    $compressedBytes->incRunningCode();
+                    $sequence2code[$sequence] = $compressedCodes->getRunningCode();
+                    $compressedCodes->incRunningCode();
 
                 }
             }
         }
 
+        // add the last code that is still in the pipeline
         if ($previousSequence !== "") {
-            $compressedBytes->addCode($sequence2code[$previousSequence]);
+            $compressedCodes->addCode($sequence2code[$previousSequence]);
         }
 
         // end with the end of information code
-        $compressedBytes->addCode($endOfInformationCode);
+        $compressedCodes->addCode($endOfInformationCode);
 
-        // close down the code string
-        $compressedBytes->flush();
+        // write pending bits to the code string
+        $compressedCodes->flush();
 
-        return $compressedBytes->getByteString();
+        return $compressedCodes->getByteString();
     }
 
     /**
@@ -126,8 +130,7 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
 
         // fill up the map with entries up to a power of 2
         for ($colorIndex = 0; $colorIndex < $colorIndexCount; $colorIndex++) {
-            $sequence2code[$colorIndex == 0 ? 'NUL' : chr($colorIndex)] = $dictSize++;
-//            $sequence2code[chr($colorIndex)] = $dictSize++;
+            $sequence2code[chr($colorIndex)] = $dictSize++;
         }
 
         return array($sequence2code, $dictSize);

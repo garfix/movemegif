@@ -3,6 +3,9 @@
 namespace movemegif\data;
 
 /**
+ * This class represents a sequence of codes (integers), stored in a string of bytes,
+ * as compressed values (smaller codes take up less bits).
+ *
  * @author Patrick van Bergen
  */
 class CompressedCodeString
@@ -23,7 +26,7 @@ class CompressedCodeString
         $this->startBitsPerPixel = $startBitsPerPixel;
         $this->runningBits = $startBitsPerPixel + 1;
 
-        $this->startRunningCode = $startRunningCode;// - 2;
+        $this->startRunningCode = $startRunningCode;
         $this->runningCode = $this->startRunningCode;
         $this->maxCode = 1 << $this->runningBits;
     }
@@ -55,8 +58,7 @@ class CompressedCodeString
             $this->powerOfTwo <<= 1;
         }
 
-        // increase code size
-//        $this->runningCode++;
+        // increase number bits if necessary
         if ($this->runningCode >= $this->maxCode) {
             $this->runningBits++;
             $this->maxCode = 1 << $this->runningBits;
@@ -70,7 +72,7 @@ class CompressedCodeString
 
     public function incRunningCode()
     {
-        $this->runningCode += 1;
+        $this->runningCode++;
     }
 
     public function reset()
