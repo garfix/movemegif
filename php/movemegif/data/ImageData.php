@@ -78,7 +78,7 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
                 $previousSequence = $colorIndex;
 
                 // the dictionary may hold only 2^12 items
-                if ($runningCode >= self::MAX_DICTIONARY_SIZE) {
+                if ($compressedBytes->getRunningCode() >= self::MAX_DICTIONARY_SIZE) {
 
                     // insert a clear code
                     $compressedBytes->addCode($clearCode);
@@ -93,7 +93,8 @@ $colorIndex = ($colorIndex === chr(0) ? 'NUL' : $colorIndex);
                 } else {
 
                     // store the new sequence to the map
-                    $sequence2code[$sequence] = $runningCode++;
+                    $sequence2code[$sequence] = $compressedBytes->getRunningCode();
+                    $compressedBytes->incRunningCode();
 
                 }
             }

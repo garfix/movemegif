@@ -23,7 +23,7 @@ class CompressedCodeString
         $this->startBitsPerPixel = $startBitsPerPixel;
         $this->runningBits = $startBitsPerPixel + 1;
 
-        $this->startRunningCode = $startRunningCode - 2;
+        $this->startRunningCode = $startRunningCode;// - 2;
         $this->runningCode = $this->startRunningCode;
         $this->maxCode = 1 << $this->runningBits;
     }
@@ -56,7 +56,7 @@ class CompressedCodeString
         }
 
         // increase code size
-        $this->runningCode++;
+//        $this->runningCode++;
         if ($this->runningCode >= $this->maxCode) {
             $this->runningBits++;
             $this->maxCode = 1 << $this->runningBits;
