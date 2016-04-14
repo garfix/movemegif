@@ -9,7 +9,7 @@ class Frame
 {
     const DISPOSAL_UNDEFINED = 0;
     const DISPOSAL_LEAVE = 1;
-    const DISPOSAL_RESTORE_TO_BG_COLOR = 2;
+    const DISPOSAL_RESTORE_TO_BACKGROUND = 2;
     const DISPOSAL_RESTORE_TO_PREVIOUS_FRAME = 3;
 
     /** @var Canvas */
@@ -131,12 +131,15 @@ class Frame
     }
 
     /**
-     * Specify what happens at the end of this frame: overwrite all pixels of this frame with the background color of the canvas.
+     * Specify what happens at the end of this frame: overwrite all pixels of this frame with the background.
+     *
+     * Originally this meant that the GIF's background color was used. In most browsers, the frame is 'erased' and the part of the page behind it 'shines through'.
+     *
      * @return $this
      */
-    public function setDisposalToOverwriteWithBackgroundColor()
+    public function setDisposalToOverwriteWithBackground()
     {
-        $this->disposalMethod = self::DISPOSAL_RESTORE_TO_BG_COLOR;
+        $this->disposalMethod = self::DISPOSAL_RESTORE_TO_BACKGROUND;
         return $this;
     }
 

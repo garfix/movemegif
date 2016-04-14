@@ -29,7 +29,7 @@ class GifBuilder
     /** @var int The number of times all frames must be repeated */
     private $repeat = null;
 
-    /** @var int A 0x00RRGGBB representation of a color */
+    /** @var int A 0x00RRGGBB representation of a color. Not used by most browsers, nor by this lib */
     private $backgroundColor = null;
 
     /** @var  int Width of the canvas in [0..65535] */
@@ -69,26 +69,6 @@ class GifBuilder
     }
 
     /**
-     * Sets the "background color", the color that is used to erase a frame at the end of its duration.
-     *
-     * This color is used when Frame::setDisposalToOverwriteWithBackgroundColor() is used
-     *
-     * @param int $color A 0x00RRGGBB representation of a color.
-     */
-    public function setBackgroundColor($color)
-    {
-        $this->backgroundColor = $color;
-    }
-
-    /**
-     * @return int A 0x00RRGGBB representation of a color.
-     */
-    public function getBackgroundColor()
-    {
-        return $this->backgroundColor;
-    }
-
-    /**
      * Adds a commenting text to the file. This comment serves mainly as a signature of the creator,
      *
      * @param string $comment
@@ -113,6 +93,9 @@ class GifBuilder
         $extensionContents = '';
 
         if ($this->repeat !== null) {
+
+            // the repeat-block causes all other frames to be repeated
+            // its position in the file has no effect on its function
 
             $repeat = new NetscapeApplicationBlock();
             $repeat->setRepeatCount($this->repeat);

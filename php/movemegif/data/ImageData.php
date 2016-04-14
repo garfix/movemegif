@@ -7,7 +7,6 @@ namespace movemegif\data;
  */
 class ImageData
 {
-    const NUMBER_OF_SPECIAL_CODES = 2;
     const MAX_DICTIONARY_SIZE = 4095;
 
     /** @var int[] An array of color indexes */
@@ -39,8 +38,8 @@ class ImageData
      * http://www.matthewflickinger.com/lab/whatsinagif/lzw_image_data.asp and
      * https://sourceforge.net/p/giflib/code/ci/master/tree/lib/egif_lib.c
      *
-     * @param string $uncompressedString
-     * @param int $colorIndexCount A power of two.
+     * @param string $uncompressedString A string of color indexes
+     * @param int $colorIndexCount Number of colors (the first power of two that spans it)
      * @return array
      */
     function gifLzwCompress($uncompressedString, $colorIndexCount)
