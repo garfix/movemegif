@@ -23,16 +23,13 @@ class GdCanvas implements Canvas
         return $this->resource;
     }
 
-    public function getPixels()
+    public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom)
     {
-        $width = imagesx($this->resource);
-        $height = imagesy($this->resource);
-
         $pixels = array();
         $index2color = array();
 
-        for ($y = 0; $y < $height; $y++) {
-            for ($x = 0; $x < $width; $x++) {
+        for ($y = $clipTop; $y <= $clipBottom; $y++) {
+            for ($x = $clipLeft; $x <= $clipRight; $x++) {
 
                 $index = imagecolorat($this->resource, $x, $y);
 

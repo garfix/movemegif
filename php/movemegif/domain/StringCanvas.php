@@ -78,8 +78,29 @@ class StringCanvas implements Canvas
         return $this->height;
     }
 
-    public function getPixels()
+    public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom)
     {
-        return $this->pixels;
+        if ($clipLeft == 0 && $clipRight == $this->width - 1 && $clipTop == 0 && $clipBottom == $this->height - 1) {
+
+            return $this->pixels;
+
+        } else {
+
+            $pixels = array();
+
+            $i = 0;
+            for ($y = 0; $y < $this->height; $y++) {
+                for ($x = 0; $x < $this->width; $x++) {
+                    if ($x >= $clipLeft && $x <= $clipRight) {
+                        if ($y >= $clipTop && $y <= $clipBottom) {
+                            $pixels[] = $this->pixels[$i];
+                        }
+                    }
+                    $i++;
+                }
+            }
+
+            return $pixels;
+        }
     }
 }

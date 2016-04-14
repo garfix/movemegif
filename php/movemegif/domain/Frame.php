@@ -184,9 +184,9 @@ class Frame
     /**
      * @return int[]
      */
-    public function getPixels()
+    public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom)
     {
-        return $this->getCanvas()->getPixels();
+        return $this->getCanvas()->getPixels($clipLeft, $clipTop, $clipRight, $clipBottom);
     }
 
     public function getCanvas()
@@ -229,6 +229,7 @@ class Frame
 
     /**
      * Changes the part of this frame that is actually used in the image.
+     * The pixels of the named coordinates are included.
      *
      * @param int $x1 Leftmost pixel that will be used
      * @param int $y1 Topmost pixel
@@ -240,5 +241,13 @@ class Frame
     {
         $this->clip = array($x1, $y1, $x2, $y2);
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getClip()
+    {
+        return $this->clip ? $this->clip : array(0, 0, $this->getWidth() - 1, $this->getHeight() - 1);
     }
 }

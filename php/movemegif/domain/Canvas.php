@@ -11,5 +11,5 @@ interface Canvas
 
     public function getHeight();
 
-    public function getPixels();
+    public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom);
 }

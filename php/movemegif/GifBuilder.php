@@ -115,16 +115,18 @@ class GifBuilder
                     $colorTable = $globalColorTable;
                 }
 
+                list($clipLeft, $clipTop, $clipRight, $clipBottom) = $frame->getClip();
+
                 $graphic = new GraphicExtension(
-                    $frame->getPixels(),
+                    $frame->getPixels($clipLeft, $clipTop, $clipRight, $clipBottom),
                     $colorTable,
                     $frame->getduration(),
                     $frame->getDisposalMethod(),
                     $frame->getTransparencyColor(),
-                    $frame->getWidth(),
-                    $frame->getHeight(),
-                    $frame->getLeft(),
-                    $frame->getTop()
+                    $clipRight - $clipLeft + 1,
+                    $clipBottom - $clipTop + 1,
+                    $frame->getLeft() + $clipLeft,
+                    $frame->getTop() + $clipTop
                 );
 
                 $extensionContents .= $graphic->getContents();
