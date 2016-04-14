@@ -33,6 +33,8 @@ class Frame
     /** @var int Frame image top position in [0..65535] */
     private $top;
 
+    private $clip = null;
+
     /**
      * Sets the left pixel position of this frame's canvas with respect to the GIF's canvas.
      *
@@ -155,10 +157,12 @@ class Frame
 
     /**
      * @param int $color The 0xRRGGBB color that specifies which pixels should be made transparent.
+     * @return $this
      */
     public function setTransparencyColor($color)
     {
         $this->transparencyColor = $color;
+        return $this;
     }
 
     /**
@@ -221,5 +225,20 @@ class Frame
     public function usesLocalColorTable()
     {
         return $this->useLocalColorTable;
+    }
+
+    /**
+     * Changes the part of this frame that is actually used in the image.
+     *
+     * @param int $x1 Leftmost pixel that will be used
+     * @param int $y1 Topmost pixel
+     * @param int $x2 Rightmost pixel
+     * @param int $y2 Bottommost pixel
+     * @return $this
+     */
+    public function setClip($x1, $y1, $x2, $y2)
+    {
+        $this->clip = array($x1, $y1, $x2, $y2);
+        return $this;
     }
 }
