@@ -28,8 +28,14 @@ class GdCanvas implements Canvas
         $pixels = array();
         $index2color = array();
 
-        for ($y = $clipTop; $y <= $clipBottom; $y++) {
-            for ($x = $clipLeft; $x <= $clipRight; $x++) {
+        $top = max(0, $clipTop);
+        $left = max(0, $clipLeft);
+
+        $bottom = min($this->getHeight() - 1, $clipBottom);
+        $right = min($this->getWidth() - 1, $clipRight);
+
+        for ($y = $top; $y <= $bottom; $y++) {
+            for ($x = $left; $x <= $right; $x++) {
 
                 $index = imagecolorat($this->resource, $x, $y);
 

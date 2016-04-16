@@ -33,6 +33,7 @@ class Frame
     /** @var int Frame image top position in [0..65535] */
     private $top;
 
+    /** @var ClippingArea|null */
     private $clip = null;
 
     /**
@@ -231,23 +232,26 @@ class Frame
      * Changes the part of this frame that is actually used in the image.
      * The pixels of the named coordinates are included.
      *
-     * @param int $x1 Leftmost pixel that will be used
-     * @param int $y1 Topmost pixel
-     * @param int $x2 Rightmost pixel
-     * @param int $y2 Bottommost pixel
+     * @param ClippingArea $clip
      * @return $this
      */
-    public function setClip($x1, $y1, $x2, $y2)
+    public function setClip(ClippingArea $clip)
     {
-        $this->clip = array($x1, $y1, $x2, $y2);
+        $this->clip = $clip;
         return $this;
     }
 
     /**
-     * @return array
+     * @return ClippingArea
      */
     public function getClip()
     {
-        return $this->clip ? $this->clip : array(0, 0, $this->getWidth() - 1, $this->getHeight() - 1);
+        if ($this->clip) {
+            return $this->clip;
+        } else {
+            $clip = new ClippingArea();
+            $clip->includePoint(0, 0)->includePoint($this->getWidth() - 1, $this->getHeight() - 1);
+            return $clip;
+        }
     }
 }

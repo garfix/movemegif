@@ -1,6 +1,7 @@
 <?php
 
 use movemegif\data\Formatter;
+use movemegif\domain\ClippingArea;
 use movemegif\domain\GdCanvas;
 use movemegif\domain\StringCanvas;
 
@@ -29,7 +30,9 @@ class ClipTest extends PHPUnit_Framework_TestCase
         imagefilledrectangle($canvas->getResource(), 0, 0, 6, 3, $green);
         imagefilledrectangle($canvas->getResource(), 0, 3, 6, 6, $blue);
 
-        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip(1, 1, 4, 4);
+        $clip = new ClippingArea();
+        $clip->includePoint(1, 1)->includePoint(4, 4);
+        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip($clip);
 
         $contents = $builder->getContents();
 
@@ -78,7 +81,9 @@ class ClipTest extends PHPUnit_Framework_TestCase
         );
         $canvas = new StringCanvas(6, 6, $indexString, $index2color);
 
-        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip(1, 1, 4, 4);
+        $clip = new ClippingArea();
+        $clip->includePoint(1, 1)->includePoint(4, 4);
+        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip($clip);
 
         $contents = $builder->getContents();
 
