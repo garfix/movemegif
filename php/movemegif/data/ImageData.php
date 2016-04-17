@@ -26,7 +26,7 @@ class ImageData
         /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
         $lzwMinimumCodeSize = $this->getMinimumCodeSize($this->colorTableSize);
 
-        $codes = $this->gifLzwCompress(implode('', array_map('chr', $this->pixelColorIndexes)), $this->colorTableSize);
+        $codes = $this->gifLzwCompress($this->pixelColorIndexes, $this->colorTableSize);
 
         return chr($lzwMinimumCodeSize) . DataSubBlock::createBlocks($codes) . DataSubBlock::createBlocks('');
     }
@@ -38,11 +38,11 @@ class ImageData
      * http://www.matthewflickinger.com/lab/whatsinagif/lzw_image_data.asp and
      * https://sourceforge.net/p/giflib/code/ci/master/tree/lib/egif_lib.c
      *
-     * @param string $uncompressedString A string of color indexes
+     * @param array $colorIndexes
      * @param int $colorIndexCount Number of colors (the first power of two that spans it)
      * @return array
      */
-    function gifLzwCompress($uncompressedString, $colorIndexCount)
+    function gifLzwCompress(array $colorIndexes, $colorIndexCount)
     {
         // initialize sequence 2 code map
         list($sequence2code, $runningCode) = $this->createSequence2CodeMap($colorIndexCount);
@@ -61,10 +61,10 @@ class ImageData
         $compressedCodes->addCode($clearCode);
 
         $previousSequence = "";
-        $byteCount = strlen($uncompressedString);
+        $byteCount = count($colorIndexes);
         for ($i = 0; $i < $byteCount; $i++) {
 
-            $colorIndex = $uncompressedString[$i];
+            $colorIndex = chr($colorIndexes[$i]);
             $sequence = $previousSequence . $colorIndex;
 
             if (isset($sequence2code[$sequence])) {
