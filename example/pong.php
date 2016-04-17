@@ -19,6 +19,10 @@ class Pong
 
     const BALL_SIZE = 10;
     const TRAIL_SIZE = 5;
+    const BALL_MAX_RIGHT = 470;
+    const BALL_MAX_LEFT = 20;
+    const BALL_MAX_TOP = 20;
+    const BALL_MAX_BOTTOM = 220;
 
     const CLIP_BALL = 'ball';
     const CLIP_PAD_LEFT = 'padLeft';
@@ -31,6 +35,8 @@ class Pong
 
     /** @var array|null  */
     private $ballPositions = null;
+
+    private $ballSpeed = null;
 
     /** @var array|null  */
     private $leftPadPositions = null;
@@ -60,7 +66,7 @@ class Pong
         $builder->setRepeat();
 
         $frame = 0;
-        while ($frame < 100) {
+        do {
 
             $canvas = new GdCanvas(self::CANVAS_WIDTH, self::CANVAS_HEIGHT);
 
@@ -117,7 +123,8 @@ class Pong
             }
 
             $frame++;
-        }
+
+        } while ($step < 100);
 
         return $builder;
     }
@@ -234,17 +241,13 @@ class Pong
 
     private function setupPositions()
     {
-        if (!$this->ballPositions) {
-            $this->ballPositions = array_fill(0, self::TRAIL_SIZE, array(20, 20));
-        }
+        $this->ballPositions = array_fill(0, self::TRAIL_SIZE, array(20, 20));
 
-        if (!$this->leftPadPositions) {
-            $this->leftPadPositions = array_fill(0, self::TRAIL_SIZE, array(10, 20));
-        }
+        $this->leftPadPositions = array_fill(0, self::TRAIL_SIZE, array(10, 20));
 
-        if (!$this->rightPadPositions) {
-            $this->rightPadPositions = array_fill(0, self::TRAIL_SIZE, array(480, 20));
-        }
+        $this->rightPadPositions = array_fill(0, self::TRAIL_SIZE, array(480, 20));
+
+        $this->ballSpeed = array(10, 2);
     }
 
     private function updatePositions($step)
@@ -256,14 +259,32 @@ class Pong
 
     private function updateBallPosition($step)
     {
+        // copy last position
+        $position = $this->ballPositions[self::TRAIL_SIZE - 1];
         // remove first position
         array_shift($this->ballPositions);
-        // copy first position
-        $position = $this->ballPositions[0];
 
-        if ($step < 100) {
-            $position[0] = 20 + $step * 10;;
-            $position[1] = 20 + $step * 2;
+        $position[0] += $this->ballSpeed[0];
+        $position[1] += $this->ballSpeed[1];
+
+        if ($position[0] > self::BALL_MAX_RIGHT) {
+            $position[0] = self::BALL_MAX_RIGHT - ($position[0] - self::BALL_MAX_RIGHT);
+            $this->ballSpeed[0] = -$this->ballSpeed[0];
+        }
+
+        if ($position[0] < self::BALL_MAX_LEFT) {
+            $position[0] = self::BALL_MAX_LEFT + (self::BALL_MAX_LEFT - $position[0]);
+            $this->ballSpeed[0] = -$this->ballSpeed[0];
+        }
+
+        if ($position[1] > self::BALL_MAX_BOTTOM) {
+            $position[1] = self::BALL_MAX_BOTTOM - ($position[1] - self::BALL_MAX_BOTTOM);
+            $this->ballSpeed[1] = -$this->ballSpeed[1];
+        }
+
+        if ($position[1] < self::BALL_MAX_TOP) {
+            $position[1] = self::BALL_MAX_TOP + (self::BALL_MAX_TOP - $position[1]);
+            $this->ballSpeed[1] = -$this->ballSpeed[1];
         }
 
         // add it
@@ -298,7 +319,6 @@ class Pong
 
         // add it
         $this->rightPadPositions[] = $position;
-
     }
 
     private function setupClippingAreas()
