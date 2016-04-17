@@ -235,7 +235,7 @@ class Frame
      * @param ClippingArea $clip
      * @return $this
      */
-    public function setClip(ClippingArea $clip)
+    public function setClip(ClippingArea $clip = null)
     {
         $this->clip = $clip;
         return $this;
@@ -249,9 +249,7 @@ class Frame
         if ($this->clip) {
             return $this->clip;
         } else {
-            $clip = new ClippingArea();
-            $clip->includePoint(0, 0)->includePoint($this->getWidth() - 1, $this->getHeight() - 1);
-            return $clip;
+            return new ClippingArea(0, 0, $this->getWidth() - 1, $this->getHeight() - 1);
         }
     }
 }

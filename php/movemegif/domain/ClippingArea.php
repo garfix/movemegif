@@ -7,10 +7,18 @@ namespace movemegif\domain;
  */
 class ClippingArea
 {
-    private $left = PHP_INT_MAX;
-    private $top = PHP_INT_MAX;
-    private $right = 0;
-    private $bottom = 0;
+    private $left;
+    private $top;
+    private $right;
+    private $bottom;
+
+    public function __construct($left = PHP_INT_MAX, $top = PHP_INT_MAX, $right = -1, $bottom = -1)
+    {
+        $this->left = $left;
+        $this->top = $top;
+        $this->right = $right;
+        $this->bottom = $bottom;
+    }
 
     /**
      * @param int $x
@@ -18,9 +26,10 @@ class ClippingArea
      */
     public function includeX($x)
     {
-        if ($x < $this->left) {
+        if ($this->left > $x) {
             $this->left = $x;
-        } elseif ($x > $this->right) {
+        }
+        if ($this->right < $x) {
             $this->right = $x;
         }
 
@@ -33,9 +42,10 @@ class ClippingArea
      */
     public function includeY($y)
     {
-        if ($y < $this->top) {
+        if ($this->top > $y) {
             $this->top = $y;
-        } elseif ($y > $this->bottom) {
+        }
+        if ($this->bottom < $y) {
             $this->bottom = $y;
         }
 
@@ -63,14 +73,12 @@ class ClippingArea
      */
     public function getUnion(ClippingArea $area)
     {
-        $newArea = new ClippingArea();
-        $newArea
-            ->includeX($area->left)
-            ->includeX($area->right)
-            ->includeY($area->top)
-            ->includeY($area->bottom);
-
-        return $newArea;
+        return new ClippingArea(
+            min($this->left, $area->left),
+            min($this->top, $area->top),
+            max($this->right, $area->right),
+            max($this->bottom, $area->bottom)
+        );
     }
 
     /**
@@ -110,7 +118,7 @@ class ClippingArea
      */
     public function getWidth()
     {
-        return $this->right - $this->left + 1;
+        return max(0, $this->right - $this->left + 1);
     }
 
     /**
@@ -118,6 +126,6 @@ class ClippingArea
      */
     public function getHeight()
     {
-        return $this->bottom - $this->top + 1;
+        return max(0, $this->bottom - $this->top + 1);
     }
 }
