@@ -18,11 +18,15 @@ class Pong
     const CANVAS_HEIGHT = 250;
 
     const BALL_SIZE = 10;
-    const TRAIL_SIZE = 5;
+    const BALL_TRAIL_SIZE = 5;
     const BALL_MAX_RIGHT = 470;
     const BALL_MAX_LEFT = 20;
     const BALL_MAX_TOP = 20;
     const BALL_MAX_BOTTOM = 220;
+
+    const PAD_TRAIL_SIZE = 5;
+    const PAD_MAX_TOP = 20;
+    const PAD_MAX_BOTTOM = 200;
 
     const CLIP_BALL = 'ball';
     const CLIP_PAD_LEFT = 'padLeft';
@@ -74,7 +78,7 @@ class Pong
             $step = ($frame - $stepOffset) / self::FRAMES_PER_STEP;
 
             if ($stepOffset == 0) {
-                $this->updatePositions($step);
+                $this->updatePositions();
             }
 
             $this->drawFrame($canvas, $step);
@@ -124,7 +128,7 @@ class Pong
 
             $frame++;
 
-        } while ($step < 100);
+        } while ($step < 270);
 
         return $builder;
     }
@@ -153,9 +157,9 @@ class Pong
     private function drawFrame(GdCanvas $canvas, $step)
     {
         $this->addBackground($canvas);
+        $this->addBallFrame($canvas);
         $this->addPadLeftFrame($canvas);
         $this->addPadRightFrame($canvas);
-        $this->addBallFrame($canvas);
     }
 
     private function addBackground(GdCanvas $canvas)
@@ -166,17 +170,17 @@ class Pong
     private function addBallFrame(GdCanvas $canvas)
     {
         $ballColors = array();
-        for ($b = 0; $b < self::TRAIL_SIZE; $b++) {
-            $fract = ($b + 1) / self::TRAIL_SIZE;
+        for ($b = 0; $b < self::BALL_TRAIL_SIZE; $b++) {
+            $fract = ($b + 1) / self::BALL_TRAIL_SIZE;
             $ballColors[$b] = imagecolorallocate($canvas->getResource(), (int)($fract * 0x80), (int)($fract * 0xff), (int)($fract * 0x80));
         }
 
         $clip = new ClippingArea();
 
-        for ($b = 0; $b < self::TRAIL_SIZE; $b++) {
+        for ($b = 0; $b < self::BALL_TRAIL_SIZE; $b++) {
 
-            $x1 = $this->ballPositions[$b][0];
-            $y1 = $this->ballPositions[$b][1];
+            $x1 = (int)$this->ballPositions[$b][0];
+            $y1 = (int)$this->ballPositions[$b][1];
             $x2 = $x1 + self::BALL_SIZE - 1;
             $y2 = $y1 + self::BALL_SIZE - 1;
 
@@ -192,17 +196,17 @@ class Pong
     private function addPadLeftFrame(GdCanvas $canvas)
     {
         $padColors = array();
-        for ($b = 0; $b < self::TRAIL_SIZE; $b++) {
-            $fract = ($b + 1) / self::TRAIL_SIZE;
+        for ($b = 0; $b < self::PAD_TRAIL_SIZE; $b++) {
+            $fract = ($b + 1) / self::PAD_TRAIL_SIZE;
             $padColors[$b] = imagecolorallocate($canvas->getResource(), (int)($fract * 0xf0), (int)($fract * 0x80), (int)($fract * 0x80));
         }
 
         $clip = new ClippingArea();
 
-        for ($b = 0; $b < self::TRAIL_SIZE; $b++) {
+        for ($b = 0; $b < self::PAD_TRAIL_SIZE; $b++) {
 
-            $x1 = $this->leftPadPositions[$b][0];
-            $y1 = $this->leftPadPositions[$b][1];
+            $x1 = (int)$this->leftPadPositions[$b][0];
+            $y1 = (int)$this->leftPadPositions[$b][1];
             $x2 = $x1 + 9;
             $y2 = $y1 + 29;
 
@@ -217,17 +221,17 @@ class Pong
     private function addPadRightFrame(GdCanvas $canvas)
     {
         $padColors = array();
-        for ($b = 0; $b < self::TRAIL_SIZE; $b++) {
-            $fract = ($b + 1) / self::TRAIL_SIZE;
+        for ($b = 0; $b < self::PAD_TRAIL_SIZE; $b++) {
+            $fract = ($b + 1) / self::PAD_TRAIL_SIZE;
             $padColors[$b] = imagecolorallocate($canvas->getResource(), (int)($fract * 0xff), (int)($fract * 0x80), (int)($fract * 0x80));
         }
 
         $clip = new ClippingArea();
 
-        for ($b = 0; $b < self::TRAIL_SIZE; $b++) {
+        for ($b = 0; $b < self::PAD_TRAIL_SIZE; $b++) {
 
-            $x1 = $this->rightPadPositions[$b][0];
-            $y1 = $this->rightPadPositions[$b][1];
+            $x1 = (int)$this->rightPadPositions[$b][0];
+            $y1 = (int)$this->rightPadPositions[$b][1];
             $x2 = $x1 + 9;
             $y2 = $y1 + 29;
 
@@ -241,26 +245,29 @@ class Pong
 
     private function setupPositions()
     {
-        $this->ballPositions = array_fill(0, self::TRAIL_SIZE, array(20, 20));
+        $this->ballPositions = array_fill(0, self::BALL_TRAIL_SIZE, array(20, 124));
+        $this->leftPadPositions = array_fill(0, self::PAD_TRAIL_SIZE, array(10, 20));
+        $this->rightPadPositions = array_fill(0, self::PAD_TRAIL_SIZE, array(480, 20));
+        // finetuned to start at the exact position where it left off
+        $this->ballSpeed = array(10, 2.96);
 
-        $this->leftPadPositions = array_fill(0, self::TRAIL_SIZE, array(10, 20));
-
-        $this->rightPadPositions = array_fill(0, self::TRAIL_SIZE, array(480, 20));
-
-        $this->ballSpeed = array(10, 2);
+        // start a trail before the first frame
+        for ($i = 0; $i < self::BALL_TRAIL_SIZE; $i++) {
+            $this->updatePositions();
+        }
     }
 
-    private function updatePositions($step)
+    private function updatePositions()
     {
-        $this->updateBallPosition($step);
-        $this->updatePadLeft($step);
-        $this->updatePadRight($step);
+        $this->updateBallPosition();
+        $this->updatePadLeft();
+        $this->updatePadRight();
     }
 
-    private function updateBallPosition($step)
+    private function updateBallPosition()
     {
         // copy last position
-        $position = $this->ballPositions[self::TRAIL_SIZE - 1];
+        $position = $this->ballPositions[self::BALL_TRAIL_SIZE - 1];
         // remove first position
         array_shift($this->ballPositions);
 
@@ -291,31 +298,31 @@ class Pong
         $this->ballPositions[] = $position;
     }
 
-    private function updatePadLeft($step)
+    private function updatePadLeft()
     {
         // remove first position
         array_shift($this->leftPadPositions);
         // copy first position
         $position = $this->leftPadPositions[0];
 
-        if ($step < 10) {
-            $position[1] = 20 + $step * 10;
-        }
+        $ballPosition = $this->ballPositions[self::BALL_TRAIL_SIZE - 1];
+
+        $position[1] = max(min($ballPosition[1] - 10, self::PAD_MAX_BOTTOM), self::PAD_MAX_TOP);
 
         // add it
         $this->leftPadPositions[] = $position;
     }
 
-    private function updatePadRight($step)
+    private function updatePadRight()
     {
         // remove first position
         array_shift($this->rightPadPositions);
         // copy first position
         $position = $this->rightPadPositions[0];
 
-        if ($step < 10) {
-            $position[1] = 20 + $step * 10;
-        }
+        $ballPosition = $this->ballPositions[self::BALL_TRAIL_SIZE - 1];
+
+        $position[1] = max(min($ballPosition[1] - 10, self::PAD_MAX_BOTTOM), self::PAD_MAX_TOP);
 
         // add it
         $this->rightPadPositions[] = $position;
