@@ -10,7 +10,7 @@ require_once __DIR__ . '/../php/autoloader.php';
 // just for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-set_time_limit(100);
+set_time_limit(200);
 
 class Pong
 {
@@ -31,6 +31,7 @@ class Pong
     const CLIP_BALL = 'ball';
     const CLIP_PAD_LEFT = 'padLeft';
     const CLIP_PAD_RIGHT = 'padRight';
+    const CLIP_TEXT = 'text';
 
     const FRAMES_PER_STEP = 4;
 
@@ -69,6 +70,9 @@ class Pong
         $builder = new GifBuilder(self::CANVAS_WIDTH, self::CANVAS_HEIGHT);
         $builder->setRepeat();
 
+        $duration = 0;
+        $clippingArea = null;
+
         $frame = 0;
         do {
 
@@ -97,12 +101,12 @@ class Pong
 
                 case 2:
                     $clippingArea = self::CLIP_BALL;
-                    $duration = 2;
+                    $duration = $this->textIsShowing($step) ? 1 : 2;
                     break;
 
-                default:
-                    $clippingArea = null;
-                    $duration = 0;
+                case 3:
+                    $clippingArea = self::CLIP_TEXT;
+                    $duration = $this->textIsShowing($step) ? 1 : 0;
 
             }
 
@@ -128,7 +132,8 @@ class Pong
 
             $frame++;
 
-        } while ($step < 270);
+        // number of steps is finetuned to make the animation loop properly
+    } while ($step < 270);
 
         return $builder;
     }
@@ -160,6 +165,7 @@ class Pong
         $this->addBallFrame($canvas);
         $this->addPadLeftFrame($canvas);
         $this->addPadRightFrame($canvas);
+        $this->addTextFrame($canvas, $step);
     }
 
     private function addBackground(GdCanvas $canvas)
@@ -243,6 +249,27 @@ class Pong
         $this->activeClippings[self::CLIP_PAD_RIGHT] = $clip;
     }
 
+    private function addTextFrame(GdCanvas $canvas, $step)
+    {
+        $color = imagecolorallocate($canvas->getResource(), 0xff, 0xff, 0xff);
+
+        $clip = new ClippingArea();
+
+        if ($step >= 1 and $step < 10) {
+
+            imagestring($canvas->getResource(), 5, 10, 30, "PONG", $color);
+
+            $clip->includePoint(10, 30)->includePoint(100, 50);
+        }
+
+        $this->activeClippings[self::CLIP_TEXT] = $clip;
+    }
+
+    private function textIsShowing($step)
+    {
+        return false;//($step > 1 and $step < 10);
+    }
+
     private function setupPositions()
     {
         $this->ballPositions = array_fill(0, self::BALL_TRAIL_SIZE, array(20, 124));
@@ -274,6 +301,8 @@ class Pong
         $position[0] += $this->ballSpeed[0];
         $position[1] += $this->ballSpeed[1];
 
+        // bounce
+
         if ($position[0] > self::BALL_MAX_RIGHT) {
             $position[0] = self::BALL_MAX_RIGHT - ($position[0] - self::BALL_MAX_RIGHT);
             $this->ballSpeed[0] = -$this->ballSpeed[0];
@@ -294,7 +323,7 @@ class Pong
             $this->ballSpeed[1] = -$this->ballSpeed[1];
         }
 
-        // add it
+        // add new position
         $this->ballPositions[] = $position;
     }
 
@@ -333,7 +362,8 @@ class Pong
         $this->activeClippings = array(
             self::CLIP_PAD_LEFT => new ClippingArea(),
             self::CLIP_PAD_RIGHT => new ClippingArea(),
-            self::CLIP_BALL => new ClippingArea()
+            self::CLIP_BALL => new ClippingArea(),
+            self::CLIP_TEXT => new ClippingArea()
         );
 
         $this->previousClippings = $this->activeClippings;
