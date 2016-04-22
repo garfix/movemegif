@@ -39,7 +39,7 @@ class Background extends Actor
     {
     }
 
-    public function draw(GdCanvas $canvas, ClippingArea $clippingArea)
+    public function draw(GdCanvas $canvas, ClippingArea $clippingArea, $step)
     {
         imagecopy($canvas->getResource(), $this->background->getResource(), 0, 0, 0, 0, Pong::CANVAS_WIDTH, Pong::CANVAS_HEIGHT);
     }

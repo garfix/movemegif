@@ -117,16 +117,24 @@ class GifBuilder
 
                 $clip = $frame->getClip();
 
+                // the clipping area itself needs to be clipped along the borders of the frame
+                $clipLeft = max(0, $clip->getLeft());
+                $clipTop = max(0, $clip->getTop());
+                $clipRight = min($frame->getWidth() - 1, $clip->getRight());
+                $clipBottom = min($frame->getHeight() - 1, $clip->getBottom());
+                $clipWidth = $clipRight - $clipLeft + 1;
+                $clipHeight = $clipBottom - $clipTop + 1;
+
                 $graphic = new GraphicExtension(
                     $frame->getPixels($clip->getLeft(), $clip->getTop(), $clip->getRight(), $clip->getBottom()),
                     $colorTable,
                     $frame->getduration(),
                     $frame->getDisposalMethod(),
                     $frame->getTransparencyColor(),
-                    $clip->getWidth(),
-                    $clip->getHeight(),
-                    $frame->getLeft() + $clip->getLeft(),
-                    $frame->getTop() + $clip->getTop()
+                    $clipWidth,
+                    $clipHeight,
+                    $frame->getLeft() + $clipLeft,
+                    $frame->getTop() + $clipTop
                 );
 
                 $extensionContents .= $graphic->getContents();

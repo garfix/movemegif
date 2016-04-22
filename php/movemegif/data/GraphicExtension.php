@@ -2,6 +2,8 @@
 
 namespace movemegif\data;
 
+use movemegif\exception\EmptyFrameException;
+
 /**
  * @author Patrick van Bergen
  */
@@ -48,6 +50,10 @@ class GraphicExtension implements Extension
         $this->height = $height;
         $this->left = $left;
         $this->top = $top;
+
+        if (empty($pixelData)) {
+            throw EmptyFrameException::create();
+        }
 
         $this->pixelColorIndexes = array();
         foreach ($pixelData as $color) {

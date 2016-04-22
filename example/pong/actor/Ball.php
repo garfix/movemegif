@@ -70,7 +70,7 @@ class Ball extends Actor
 
     }
 
-    public function draw(GdCanvas $canvas, ClippingArea $clippingArea)
+    public function draw(GdCanvas $canvas, ClippingArea $clippingArea, $step)
     {
         $ballColors = array();
         for ($b = 0; $b < self::BALL_TRAIL_SIZE; $b++) {

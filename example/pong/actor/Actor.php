@@ -30,7 +30,7 @@ class Actor
     {
     }
 
-    public function draw(GdCanvas $canvas, ClippingArea $clippingArea)
+    public function draw(GdCanvas $canvas, ClippingArea $clippingArea, $step)
     {
     }
 

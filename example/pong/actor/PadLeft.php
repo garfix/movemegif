@@ -37,7 +37,7 @@ class PadLeft extends Pad
         $this->leftPadPositions[] = $position;
     }
 
-    public function draw(GdCanvas $canvas, ClippingArea $clippingArea)
+    public function draw(GdCanvas $canvas, ClippingArea $clippingArea, $step)
     {
         $padColors = array();
         for ($b = 0; $b < self::PAD_TRAIL_SIZE; $b++) {

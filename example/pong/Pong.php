@@ -28,19 +28,6 @@ class Pong
     /** @var Actor[] */
     private $actors = array();
 
-    public function __construct()
-    {
-        $ball = new Ball();
-
-        $this->actors[self::BACKGROUND] = new Background();
-        $this->actors[self::BALL] = $ball;
-        $this->actors[self::PAD_LEFT] = new PadLeft($ball);
-        $this->actors[self::PAD_RIGHT] = new PadRight($ball);
-        $this->actors[self::TEXT] = new Text();
-
-        $this->setupPositions();
-    }
-
     /**
      * @return GifBuilder
      */
@@ -48,6 +35,12 @@ class Pong
     {
         $builder = new GifBuilder(self::CANVAS_WIDTH, self::CANVAS_HEIGHT);
         $builder->setRepeat();
+
+        // create new actors
+        $this->initializeActors();
+
+        // place them at their initial positions
+        $this->setupPositions();
 
         $duration = 0;
         $actor = null;
@@ -57,13 +50,20 @@ class Pong
 
             $canvas = new GdCanvas(self::CANVAS_WIDTH, self::CANVAS_HEIGHT);
 
+            // an offset is an internal position in a step,
+            // in which a single actor is painted
             $stepOffset = $frame % self::FRAMES_PER_STEP;
+
+            // a step represents a single cycle wherein all actors are painted once
             $step = ($frame - $stepOffset) / self::FRAMES_PER_STEP;
 
+            // positions are updated at the beginning of each step
             if ($stepOffset == 0) {
                 $this->updatePositions($step);
             }
 
+            // let all actors draw themselves to a canvas,
+            // and update their clipping areas
             $this->drawFrame($canvas, $step);
 
             switch ($stepOffset) {
@@ -80,15 +80,17 @@ class Pong
 
                 case 2:
                     $actor = self::BALL;
-//                    $duration = $this->textIsShowing($step) ? 1 : 2;
-                    $duration = 2;
+                    /** @var Text $text */
+                    $text = $this->actors[self::TEXT];
+                    $duration = $text->isActive($step) ? 1 : 2;
                     break;
 
                 case 3:
                     $actor = self::TEXT;
-//                    $duration = $this->textIsShowing($step) ? 1 : 0;
-                    $duration = 0;
-
+                    /** @var Text $text */
+                    $text = $this->actors[self::TEXT];
+                    $duration = $text->isActive($step) ? 1 : 0;
+                    break;
             }
 
             if ($duration) {
@@ -106,20 +108,31 @@ class Pong
                 $this->actors[$actor]->setPreviousClippingArea(
                     $this->actors[$actor]->getActiveClippingArea());
 
+                // add a frame in which a single actor is updated
+                // this way, only the smallest area of the image needs to be redrawn
                 $builder->addFrame()
                     ->setCanvas($canvas)
                     ->setClip($clip)
                     ->setDuration($duration);
-
             }
 
             $frame++;
 
             // number of steps is finetuned to make the animation loop properly
         } while ($step < 270);
-//        } while ($step < 30);
 
         return $builder;
+    }
+
+    private function initializeActors()
+    {
+        $ball = new Ball();
+
+        $this->actors[self::BACKGROUND] = new Background();
+        $this->actors[self::BALL] = $ball;
+        $this->actors[self::PAD_LEFT] = new PadLeft($ball);
+        $this->actors[self::PAD_RIGHT] = new PadRight($ball);
+        $this->actors[self::TEXT] = new Text();
     }
 
     private function setupPositions()
@@ -133,7 +146,7 @@ class Pong
     {
         foreach ($this->actors as $actor) {
             $clippingArea = new ClippingArea();
-            $actor->draw($canvas, $clippingArea);
+            $actor->draw($canvas, $clippingArea, $step);
             $actor->setActiveClippingArea($clippingArea);
         }
     }
