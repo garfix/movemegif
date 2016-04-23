@@ -1,6 +1,8 @@
 <?php
 
 namespace movemegif\domain;
+use movemegif\exception\ColorNotFoundException;
+use movemegif\exception\InvalidDimensionsException;
 
 /**
  * @author Patrick van Bergen
@@ -39,6 +41,8 @@ class StringCanvas implements Canvas
      * @param int $height
      * @param $indexString string $pixelIndexes A whitespace separated string of color indexes.
      * @param int[] $index2color An index 2 RGB color map.
+     * @throws ColorNotFoundException
+     * @throws InvalidDimensionsException
      */
     public function __construct($width, $height, $indexString, array $index2color)
     {
@@ -56,7 +60,7 @@ class StringCanvas implements Canvas
             if (array_key_exists($index, $index2color)) {
                 $array[] = $index2color[$index];
             } else {
-#todo
+                throw ColorNotFoundException::create($index);
             }
 
         }
@@ -64,7 +68,7 @@ class StringCanvas implements Canvas
         $this->pixels = $array;
 
         if (count($array) != $this->width * $this->height) {
-#todo throw error
+            throw InvalidDimensionsException::create();
         }
     }
 
