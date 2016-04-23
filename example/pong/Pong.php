@@ -2,12 +2,12 @@
 
 namespace pong;
 
-use pong\actor\Actor;
-use pong\actor\Background;
-use pong\actor\Ball;
 use movemegif\domain\ClippingArea;
 use movemegif\domain\GdCanvas;
 use movemegif\GifBuilder;
+use pong\actor\Actor;
+use pong\actor\Background;
+use pong\actor\Ball;
 use pong\actor\PadLeft;
 use pong\actor\PadRight;
 use pong\actor\Text;
@@ -18,6 +18,7 @@ class Pong
     const CANVAS_HEIGHT = 250;
 
     const FRAMES_PER_STEP = 4;
+    const STEP_COUNT = 270;
 
     const BACKGROUND = 'background';
     const BALL = 'ball';
@@ -86,6 +87,7 @@ class Pong
                     break;
 
                 case 3:
+                    // both the scores and the animated "PONG" text
                     $actor = self::TEXT;
                     /** @var Text $text */
                     $text = $this->actors[self::TEXT];
@@ -119,7 +121,7 @@ class Pong
             $frame++;
 
             // number of steps is finetuned to make the animation loop properly
-        } while ($step < 270);
+        } while ($step < self::STEP_COUNT);
 
         return $builder;
     }
