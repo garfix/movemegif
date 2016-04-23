@@ -2,6 +2,8 @@
 
 namespace movemegif\domain;
 
+use movemegif\exception\DurationTooSmallException;
+
 /**
  * @author Patrick van Bergen
  */
@@ -119,15 +121,27 @@ class Frame
      * Duration in 1/100ths of a second.
      *
      * But this is theory! In practice browsers don't respect very small frame rates, and the smallest framerate
-     * that is useful is actually 5 or so. You must experiment with actual browsers.
+     * that is useful is actually 2. You must experiment with some actual browsers.
      *
-     * @see http://humpy77.deviantart.com/journal/Frame-Delay-Times-for-Animated-GIFs-214150546
+     * This library throws an exception when you use value 0 or 1 anyway.
      *
-     * @param int $duration The time this frame is visible (in 1/100 seconds).
+     * If you _must_ use 0 or 1, set $forced = true
+     *
+     * @see http://superuser.com/questions/569924/why-is-the-gif-i-created-so-slow
+     *
+     * @param int $duration The time this frame is visible (in 1/100 seconds). Use a value between 0 and 65535
+     * @param bool $forced
      * @return $this
+     * @throws DurationTooSmallException
      */
-    public function setDuration($duration)
+    public function setDuration($duration, $forced = false)
     {
+        if ($duration < 2) {
+            if (!$forced) {
+                throw DurationTooSmallException::create();
+            }
+        }
+
         $this->duration = $duration;
         return $this;
     }

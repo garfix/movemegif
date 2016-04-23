@@ -1,7 +1,10 @@
 <?php
 
+use movemegif\domain\Frame;
 use movemegif\domain\StringCanvas;
+use movemegif\exception\DurationTooSmallException;
 use movemegif\exception\MovemegifException;
+use movemegif\exception\TooManyColorsException;
 use movemegif\GifBuilder;
 
 require_once __DIR__ . '/../../php/autoloader.php';
@@ -43,11 +46,42 @@ class ExceptionTest extends PHPUnit_Framework_TestCase
 
         try {
             $builder->getContents();
-        } catch (MovemegifException $e) {
+        } catch (TooManyColorsException $e) {
             $count++;
         }
 
         $this->assertSame(1, $count);
+    }
 
+    public function durationTooSmallExceptionTest()
+    {
+        $count = 0;
+
+        $frame = new Frame();
+        $frame->setDuration(1);
+
+        try {
+
+        } catch (DurationTooSmallException $e) {
+            $count++;
+        }
+
+        $this->assertSame(1, $count);
+    }
+
+    public function emptyFrameExceptionTest()
+    {
+        $count = 0;
+
+        $frame = new Frame();
+        $frame->setDuration(1);
+
+        try {
+
+        } catch (DurationTooSmallException $e) {
+            $count++;
+        }
+
+        $this->assertSame(1, $count);
     }
 }

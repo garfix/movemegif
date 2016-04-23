@@ -71,19 +71,19 @@ class Pong
 
                 case 0:
                     $actor = self::PAD_LEFT;
-                    $duration = 1;
+                    $duration = 2;
                     break;
 
                 case 1:
                     $actor = self::PAD_RIGHT;
-                    $duration = 1;
+                    $duration = 2;
                     break;
 
                 case 2:
                     $actor = self::BALL;
                     /** @var Text $text */
                     $text = $this->actors[self::TEXT];
-                    $duration = $text->isActive($step) ? 1 : 2;
+                    $duration = $text->isActive($step) ? 2 : 4;
                     break;
 
                 case 3:
@@ -91,7 +91,7 @@ class Pong
                     $actor = self::TEXT;
                     /** @var Text $text */
                     $text = $this->actors[self::TEXT];
-                    $duration = $text->isActive($step) ? 1 : 0;
+                    $duration = $text->isActive($step) ? 2 : 0;
                     break;
             }
 
@@ -112,6 +112,12 @@ class Pong
 
                 // add a frame in which a single actor is updated
                 // this way, only the smallest area of the image needs to be redrawn
+
+                // we use a duration of 2/100 second (browsers will not allow lower values)
+                // since 4 browser frames are used to sender 1 pong frame,
+                // this results in an actual framerate of 50 / 4 = 12.5 frames per second
+                // this is not much, but the resulting filesize only 180 kb for 270 frames (!)
+
                 $builder->addFrame()
                     ->setCanvas($canvas)
                     ->setClip($clip)
