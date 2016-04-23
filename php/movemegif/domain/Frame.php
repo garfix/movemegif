@@ -116,6 +116,13 @@ class Frame
     }
 
     /**
+     * Duration in 1/100ths of a second.
+     *
+     * But this is theory! In practice browsers don't respect very small frame rates, and the smallest framerate
+     * that is useful is actually 5 or so. You must experiment with actual browsers.
+     *
+     * @see http://humpy77.deviantart.com/journal/Frame-Delay-Times-for-Animated-GIFs-214150546
+     *
      * @param int $duration The time this frame is visible (in 1/100 seconds).
      * @return $this
      */
