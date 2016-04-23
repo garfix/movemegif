@@ -8,19 +8,11 @@ namespace movemegif\domain;
 class GdCanvas implements Canvas
 {
     /** @var resource  */
-    private $resource;
+    protected $resource;
 
     public function __construct($width, $height)
     {
         $this->resource = imagecreate($width, $height);
-    }
-
-    /**
-     * @return resource
-     */
-    public function getResource()
-    {
-        return $this->resource;
     }
 
     public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom)
