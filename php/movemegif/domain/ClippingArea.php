@@ -3,6 +3,9 @@
 namespace movemegif\domain;
 
 /**
+ * Represents an area within a frame's surface.
+ * Note: the coordinates of the clipping area may lie outside the frame's surface.
+ *
  * @author Patrick van Bergen
  */
 class ClippingArea
@@ -111,21 +114,5 @@ class ClippingArea
     public function getBottom()
     {
         return $this->bottom;
-    }
-
-    /**
-     * @return int
-     */
-    public function getWidth()
-    {
-        return max(0, $this->right - $this->left + 1);
-    }
-
-    /**
-     * @return int
-     */
-    public function getHeight()
-    {
-        return max(0, $this->bottom - $this->top + 1);
     }
 }
