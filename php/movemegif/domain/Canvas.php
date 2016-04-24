@@ -5,11 +5,27 @@ namespace movemegif\domain;
 /**
  * @author Patrick van Bergen
  */
-interface Canvas
+abstract class Canvas
 {
-    public function getWidth();
+    /** @var int|null The 0xRRGGBB color that specifies the pixels that will be made transparent (null = none) */
+    protected $transparencyColor = null;
 
-    public function getHeight();
+    public abstract function getWidth();
 
-    public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom);
+    public abstract function getHeight();
+
+    public abstract function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom);
+
+    /**
+     * @param int $color A color like 0xRRGGBB
+     */
+    public function setTransparencyColor($color)
+    {
+        $this->transparencyColor = $color;
+    }
+
+    public function getTransparencyColor()
+    {
+        return $this->transparencyColor;
+    }
 }

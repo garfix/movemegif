@@ -7,7 +7,7 @@ use movemegif\exception\InvalidDimensionsException;
 /**
  * @author Patrick van Bergen
  */
-class StringCanvas implements Canvas
+class StringCanvas extends Canvas
 {
     /** @var  int */
     private $width;

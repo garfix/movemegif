@@ -67,16 +67,16 @@ class GraphicExtension implements Extension
 
     public function getContents()
     {
-        $transparentColorFlag = $this->transparentColorIndex !== null ? 1 : 0;
-        $transparentColorIndex = $transparentColorFlag ? $this->transparentColorIndex : 0;
-        $packedByte = ($this->disposalMethod * 4) + ($this->userInputFlag * 2) + $transparentColorFlag;
+        $transparencyColorFlag = $this->transparentColorIndex !== null ? 1 : 0;
+        $transparencyColorIndex = $transparencyColorFlag ? $this->transparentColorIndex : 0;
+        $packedByte = ($this->disposalMethod * 4) + ($this->userInputFlag * 2) + $transparencyColorFlag;
 
         $imageDescriptor = new ImageDescriptor($this->width, $this->height, $this->left, $this->top, $this->colorTable);
         $imageData = new ImageData($this->pixelColorIndexes, $this->colorTable->getTableSize());
 
         return
             chr(self::EXTENSION_INTRODUCER) . chr(self::GRAPHIC_CONTROL_LABEL) .
-            DataSubBlock::createBlocks(chr($packedByte) . pack('v', $this->duration) . chr($transparentColorIndex)) .
+            DataSubBlock::createBlocks(chr($packedByte) . pack('v', $this->duration) . chr($transparencyColorIndex)) .
             DataSubBlock::createBlocks('') .
             $imageDescriptor->getContents() .
             ($this->colorTable->isLocal() ? $this->colorTable->getContents() : '') .

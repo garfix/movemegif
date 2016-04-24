@@ -34,11 +34,14 @@ class FeatureTest extends PHPUnit_Framework_TestCase
         );
 
         $builder = new GifBuilder(6, 6);
+
+        $canvas = new StringCanvas(6, 6, $frame1, $index2color);
+        $canvas->setTransparencyColor(0xFF0000);
+
         $builder->addFrame()
-            ->setCanvas(new StringCanvas(6, 6, $frame1, $index2color))
+            ->setCanvas($canvas)
             ->setDuration(50)
             ->setDisposalToOverwriteWithPreviousFrame()
-            ->setTransparencyColor(0xFF0000)
         ;
 
         $frame2 = "

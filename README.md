@@ -31,6 +31,8 @@ The library is written in PHP, and since it performs all its low-level calculati
 * A duration of 2/100-ths of a second is the minimum, since browsers
     [impose a slowness fine](http://superuser.com/questions/569924/why-is-the-gif-i-created-so-slow) for values of 0 and 1.
 * GIF (or rather Netscape's Application Block) does not allow you to start looping a subset of all frames.
+* While GIF allows you to _restore to background color_ at the end of a frame, browsers interpret this by "restoring"
+ to the pixels that show though from the page on which the image is located.
 
 Thanks a great deal to Matthew Flickinger for writing an awesome [GIF format explanation](http://www.matthewflickinger.com/lab/whatsinagif/index.html)
 
