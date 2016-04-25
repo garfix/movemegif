@@ -27,10 +27,10 @@ class Frame
     private $disposalMethod = self::DISPOSAL_UNDEFINED;
 
     /** @var int Frame image left position in [0..65535] */
-    private $left;
+    private $left = 0;
 
     /** @var int Frame image top position in [0..65535] */
-    private $top;
+    private $top = 0;
 
     /** @var ClippingArea|null */
     private $clip = null;

@@ -51,6 +51,21 @@ The Horse example shows how to animate a series of same-sized images.
 
 The horse image was taken from [Wikipedia](https://en.wikipedia.org/wiki/Animated_cartoon)
  
+### Moki
+
+In this example we find [Moki](http://almirah.deviantart.com/art/Moki-Run-Cycle-174572876) running in the mountains.
+
+Frame 1 shows a background JPEG image. The following 46 frames show 10 different poses of Moki on different horizontal positions.
+ These are transparent GIF images that are drawn and erased per frame.
+
+The strategy here is to start with a background image and use "restore to previous frame" to paint the pictures of the dog on top of it.
+For each frame of the dogs animation, the GIF renderer draws the image (with transparent background), waits for the duration of the frame,
+ and then puts the image back into the state where it was before the image was drawn. This way, the background image remains and is ready to
+ receive the next image of the dog.
+
+This strategy helps keep the GIF image small, since the background does not need to be stored for every frame. But is also has an important drawback: in a looping, when all frames have drawn, a completely empty background image will be drawn.
+ If the dog would be on a visible position at that time, it would disappear for an instance.
+
 ### Pong
  
 The elaborate PONG example shows how you can keep the filesize small while creating a large number of frames, by the use of

@@ -85,6 +85,39 @@ class ClippingArea
     }
 
     /**
+     * Returns the intersection of this clipping area and $area,
+     *
+     * @param ClippingArea $area
+     * @return ClippingArea
+     */
+    public function getIntersection(ClippingArea $area)
+    {
+        return new ClippingArea(
+            max($this->left, $area->left),
+            max($this->top, $area->top),
+            min($this->right, $area->right),
+            min($this->bottom, $area->bottom)
+        );
+    }
+
+    /**
+     * Returns a translated version of this clipping area.
+     *
+     * @param int $dx
+     * @param int $dy
+     * @return ClippingArea
+     */
+    public function getTranslation($dx, $dy)
+    {
+        return new ClippingArea(
+            $this->left + $dx,
+            $this->top + $dy,
+            $this->right + $dx,
+            $this->bottom + $dy
+        );
+    }
+
+    /**
      * @return int
      */
     public function getLeft()

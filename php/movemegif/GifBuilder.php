@@ -10,6 +10,7 @@ use movemegif\data\HeaderBlock;
 use movemegif\data\LogicalScreenDescriptor;
 use movemegif\data\NetscapeApplicationBlock;
 use movemegif\data\Trailer;
+use movemegif\domain\ClippingArea;
 use movemegif\domain\Frame;
 use movemegif\exception\MovemegifException;
 
@@ -115,15 +116,16 @@ class GifBuilder
                     $colorTable = $globalColorTable;
                 }
 
-                $clip = $frame->getClip();
+                // the clipping area itself needs to be clipped along the borders of the frame an the whole image
 
-                // the clipping area itself needs to be clipped along the borders of the frame
-                $clipLeft = max(0, $clip->getLeft());
-                $clipTop = max(0, $clip->getTop());
-                $clipRight = min($frame->getWidth() - 1, $clip->getRight());
-                $clipBottom = min($frame->getHeight() - 1, $clip->getBottom());
-                $clipWidth = $clipRight - $clipLeft + 1;
-                $clipHeight = $clipBottom - $clipTop + 1;
+                $clippingArea = $frame->getClip();
+
+                $frameArea = new ClippingArea(0, 0, $frame->getWidth() - 1, $frame->getHeight() - 1);
+
+                $imageArea = new ClippingArea(0, 0, $this->width - 1, $this->height - 1);
+                $imageArea = $imageArea->getTranslation(-$frame->getLeft(), -$frame->getTop());
+
+                $clip = $clippingArea->getIntersection($frameArea)->getIntersection($imageArea);
 
                 $graphic = new GraphicExtension(
                     $frame->getPixels($clip->getLeft(), $clip->getTop(), $clip->getRight(), $clip->getBottom()),
@@ -131,10 +133,10 @@ class GifBuilder
                     $frame->getduration(),
                     $frame->getDisposalMethod(),
                     $frame->getTransparencyColor(),
-                    $clipWidth,
-                    $clipHeight,
-                    $frame->getLeft() + $clipLeft,
-                    $frame->getTop() + $clipTop
+                    $clip->getRight() - $clip->getLeft() + 1,
+                    $clip->getBottom() - $clip->getTop() + 1,
+                    $frame->getLeft() + $clip->getLeft(),
+                    $frame->getTop() + $clip->getTop()
                 );
 
                 $extensionContents .= $graphic->getContents();
