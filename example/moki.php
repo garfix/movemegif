@@ -22,13 +22,13 @@ require_once __DIR__ . '/../php/autoloader.php';
 $builder = new GifBuilder(320, 180);
 $builder->setRepeat();
 
+// background image
 $builder->addFrame()
     ->setCanvas(new FileImageCanvas(__DIR__ . '/moki/landscape.jpg'))
-    ->setUseLocalColorTable(true)
-;
+    ->setUseLocalColorTable(true);
 
+// dogs runs from left to the right
 $imageIndex = 0;
-
 for ($x = -140; $x <= 310; $x += 10) {
 
     $builder->addFrame()

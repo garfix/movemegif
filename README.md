@@ -66,6 +66,8 @@ For each frame of the dogs animation, the GIF renderer draws the image (with tra
 This strategy helps keep the GIF image small, since the background does not need to be stored for every frame. But is also has an important drawback: in a looping, when all frames have drawn, a completely empty background image will be drawn.
  If the dog would be on a visible position at that time, it would disappear for an instance.
 
+ ![Moki](https://raw.githubusercontent.com/garfix/movemegif/master/images/moki.gif)
+
 ### Pong
  
 The elaborate PONG example shows how you can keep the filesize small while creating a large number of frames, by the use of

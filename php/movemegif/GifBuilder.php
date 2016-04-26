@@ -2,6 +2,7 @@
 
 namespace movemegif;
 
+use movemegif\data\Clipper;
 use movemegif\data\ColorTable;
 use movemegif\data\CommentExtension;
 use movemegif\data\Extension;
@@ -87,6 +88,7 @@ class GifBuilder
      */
     public function getContents()
     {
+        $clipper = new Clipper();
         $globalColorTable = new ColorTable(false);
         $headerBlock = new HeaderBlock();
         $trailer = new Trailer();
@@ -116,16 +118,8 @@ class GifBuilder
                     $colorTable = $globalColorTable;
                 }
 
-                // the clipping area itself needs to be clipped along the borders of the frame an the whole image
-
-                $clippingArea = $frame->getClip();
-
-                $frameArea = new ClippingArea(0, 0, $frame->getWidth() - 1, $frame->getHeight() - 1);
-
-                $imageArea = new ClippingArea(0, 0, $this->width - 1, $this->height - 1);
-                $imageArea = $imageArea->getTranslation(-$frame->getLeft(), -$frame->getTop());
-
-                $clip = $clippingArea->getIntersection($frameArea)->getIntersection($imageArea);
+                // the clipping area itself needs to be clipped along the borders of the frame and the whole image
+                $clip = $clipper->getClip($frame, $this->width, $this->height);
 
                 $graphic = new GraphicExtension(
                     $frame->getPixels($clip->getLeft(), $clip->getTop(), $clip->getRight(), $clip->getBottom()),

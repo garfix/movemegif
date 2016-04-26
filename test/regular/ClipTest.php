@@ -1,7 +1,9 @@
 <?php
 
+use movemegif\data\Clipper;
 use movemegif\data\Formatter;
 use movemegif\domain\ClippingArea;
+use movemegif\domain\Frame;
 use movemegif\domain\GdCanvas;
 use movemegif\domain\StringCanvas;
 
@@ -91,5 +93,48 @@ class ClipTest extends PHPUnit_Framework_TestCase
         $expected = '47 49 46 38 39 61 0A 00 0A 00 91 00 00 FF 00 00 00 FF 00 00 00 FF 00 00 00 21 F9 04 00 00 00 00 00 2C 00 00 00 00 0A 00 0A 00 00 02 08 84 8F A9 CB ED 0F 63 2B 00 21 F9 04 00 00 00 00 00 2C 03 00 03 00 04 00 04 00 00 02 05 8C 6F A2 AB 05 00 21 FE 16 43 72 65 61 74 65 64 20 77 69 74 68 20 6D 6F 76 65 6D 65 67 69 66 00 3B';
 
         $this->assertEquals($expected, $actual);
+    }
+
+    public function testClipperClip()
+    {
+        $indexString = "
+            1 1 1 1 1 1
+            1 1 1 1 1 1
+            1 1 1 1 1 1
+            2 2 2 2 2 2
+            2 2 2 2 2 2
+            2 2 2 2 2 2
+        ";
+        $index2color = array(
+            '1' => 0x00ff00,
+            '2' => 0x0000ff,
+        );
+        $canvas = new StringCanvas(6, 6, $indexString, $index2color);
+
+        $frame = new Frame();
+        $frame->setCanvas($canvas);
+        $frame->setLeft(1)->setTop(2);
+        $frame->setClip(new ClippingArea(3, 1, 7, 7));
+
+        $clipper = new Clipper();
+        $clip = $clipper->getClip($frame, 6, 6);
+
+        $this->assertSame(3, $clip->getLeft());
+        $this->assertSame(1, $clip->getTop());
+        $this->assertSame(4, $clip->getRight());
+        $this->assertSame(3, $clip->getBottom());
+
+        $frame = new Frame();
+        $frame->setCanvas($canvas);
+        $frame->setLeft(-2)->setTop(-2);
+        $frame->setClip(new ClippingArea(-1, -2, 4, 3));
+
+        $clipper = new Clipper();
+        $clip = $clipper->getClip($frame, 6, 6);
+
+        $this->assertSame(2, $clip->getLeft());
+        $this->assertSame(2, $clip->getTop());
+        $this->assertSame(4, $clip->getRight());
+        $this->assertSame(3, $clip->getBottom());
     }
 }
