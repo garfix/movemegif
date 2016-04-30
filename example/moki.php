@@ -24,8 +24,7 @@ $builder->setRepeat();
 
 // background image
 $builder->addFrame()
-    ->setCanvas(new FileImageCanvas(__DIR__ . '/moki/landscape.jpg'))
-    ->setUseLocalColorTable();
+    ->setCanvas(new FileImageCanvas(__DIR__ . '/moki/landscape.jpg'));
 
 // dogs runs from left to the right
 $imageIndex = 0;
@@ -36,8 +35,6 @@ for ($x = -140; $x <= 310; $x += 10) {
         ->setCanvas(new FileImageCanvas(__DIR__ . '/moki/' . $imageIndex . '.gif'))
         // number of 1/100 seconds per frame
         ->setDuration(8)
-        // the image uses so many colors that each frame needs its own color table
-        ->setUseLocalColorTable()
         // position this frame on the bottom half of the image
         ->setTop(60)->setLeft($x)
         // when done painting one frame of the dog, restore the state to just before the dog was drawn

@@ -26,16 +26,24 @@ class GDAcceleratedPixelDataProducer implements PixelDataProducer
         $this->gdCanvas = $gdCanvas;
         $this->clippingArea = $clippingArea;
 
-#todo: clipping!
+        $clippingWidth = $clippingArea->getRight() - $clippingArea->getLeft() + 1;
+        $clippingHeight = $clippingArea->getBottom() - $clippingArea->getTop() + 1;
+        $clippedResource = imagecreate($clippingWidth, $clippingHeight);
 
-        $resource = $this->gdCanvas->getResource();
+        imagecopy(
+            $clippedResource, $this->gdCanvas->getResource(),
+            0, 0,
+            $clippingArea->getLeft(), $clippingArea->getTop(),
+            $clippingWidth, $clippingHeight);
 
-        // make sure the resource is transparent, so the format is GIF 89a
-        imagecolortransparent($resource, 0);
+        // make sure there is one color specified as transparent, to enforce GIF89a in imagegif
+        imagecolortransparent($clippedResource, 0);
 
         ob_start();
-        imagegif($resource);
+        imagegif($clippedResource);
         $imageData = ob_get_clean();
+
+        imagedestroy($clippedResource);
 
         $parser = new GifParser();
         $this->gifData = $parser->parseString($imageData);

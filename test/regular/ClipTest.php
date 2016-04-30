@@ -23,7 +23,7 @@ class ClipTest extends PHPUnit_Framework_TestCase
         $red = imagecolorallocate($canvas->getResource(), 0xff, 0x00, 0x00);
         imagefilledrectangle($canvas->getResource(), 0, 0, 10, 10, $red);
 
-        $builder->addFrame()->setCanvas($canvas);
+        $builder->addFrame()->setCanvas($canvas)->setUseGlobalColorTable();
 
         // green/blue rectangle
         $canvas = new GdCanvas(6, 6);
@@ -34,7 +34,7 @@ class ClipTest extends PHPUnit_Framework_TestCase
 
         $clip = new ClippingArea();
         $clip->includePoint(1, 1)->includePoint(4, 4);
-        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip($clip);
+        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip($clip)->setUseGlobalColorTable();
 
         $contents = $builder->getContents();
 
@@ -66,7 +66,7 @@ class ClipTest extends PHPUnit_Framework_TestCase
         );
         $canvas = new StringCanvas(10, 10, $indexString, $index2color);
 
-        $builder->addFrame()->setCanvas($canvas);
+        $builder->addFrame()->setCanvas($canvas)->setUseGlobalColorTable();
 
         // green/blue rectangle
         $indexString = "
@@ -85,7 +85,7 @@ class ClipTest extends PHPUnit_Framework_TestCase
 
         $clip = new ClippingArea();
         $clip->includePoint(1, 1)->includePoint(4, 4);
-        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip($clip);
+        $builder->addFrame()->setCanvas($canvas)->setTop(2)->setLeft(2)->setClip($clip)->setUseGlobalColorTable();
 
         $contents = $builder->getContents();
 

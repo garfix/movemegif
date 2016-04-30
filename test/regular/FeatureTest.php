@@ -40,6 +40,7 @@ class FeatureTest extends PHPUnit_Framework_TestCase
 
         $builder->addFrame()
             ->setCanvas($canvas)
+            ->setUseGlobalColorTable()
             ->setDuration(50)
             ->setDisposalToOverwriteWithPreviousFrame()
         ;
@@ -52,6 +53,7 @@ class FeatureTest extends PHPUnit_Framework_TestCase
 
         $builder->addFrame()->setLeft(2)->setTop(3)
             ->setCanvas(new StringCanvas(4, 3, $frame2, $index2color))
+            ->setUseGlobalColorTable()
             ->setDisposalToOverwriteWithBackground()
         ;
 

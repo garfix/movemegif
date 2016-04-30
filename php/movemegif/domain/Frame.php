@@ -18,7 +18,7 @@ class Frame
     private $canvas = null;
 
     /** @var bool  */
-    private $useLocalColorTable = false;
+    private $useLocalColorTable = true;
 
     /** @var int  */
     private $duration = 0;

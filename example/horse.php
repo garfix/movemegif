@@ -24,7 +24,6 @@ for ($i = 1; $i <= 8; $i++) {
 
     $builder->addFrame()
         ->setCanvas(new FileImageCanvas(__DIR__ . '/horse/' . $i . '.png'))
-        ->setUseLocalColorTable()
         ->setDuration(8);
 }
 

@@ -24,7 +24,13 @@ There are three ways to create a frame:
 * Create a frame with GD lib functions (GdCanvas)
 * Create frames based on a string of indexes and a color table array (StringCanvas)
 
-The library is written in PHP, and since it performs all its low-level calculations in PHP, it is quite slow.
+## About speed
+
+The library uses GD's imagegif function to generate frames quickly. But in some cases it cannot be used, and compression is done in PHP, which is much slower.
+
+* Frames are fast when GdCanvas or FileImageCanvas is used in combination with a local color table (the default).
+* Frames are much slower when the global color table is used. However this frame takes up less space in the GIF.
+* Frames are also much slower when StringCanvas is used.
 
 ## Comments
 
@@ -33,6 +39,8 @@ The library is written in PHP, and since it performs all its low-level calculati
 * GIF (or rather Netscape's Application Block) does not allow you to start looping a subset of all frames.
 * While GIF allows you to _restore to background color_ at the end of a frame, browsers interpret this by "restoring"
  to the pixels that show though from the page on which the image is located.
+* The global color table is a color table that is shared by all frames that use it.
+    Use the global color table only when space requirements are much more important than GIF creation time requirements.
 
 Thanks a great deal to Matthew Flickinger for writing an awesome [GIF format explanation](http://www.matthewflickinger.com/lab/whatsinagif/index.html)
 
