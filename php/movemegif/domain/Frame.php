@@ -102,15 +102,24 @@ class Frame
     }
 
     /**
-     * Create a custom color table for this frame alone (true) or merge colors in the global color table (false).
-     * By default this is set to false (i.e. all frames share the global color table).
+     * Create a custom color table for this frame alone.
      *
-     * @param boolean $useLocalColorTable
      * @return $this
      */
-    public function setUseLocalColorTable($useLocalColorTable = true)
+    public function setUseLocalColorTable()
     {
-        $this->useLocalColorTable = $useLocalColorTable;
+        $this->useLocalColorTable = true;
+        return $this;
+    }
+
+    /**
+     * Merge colors in the global color table. This is the default value.
+     *
+     * @return $this
+     */
+    public function setUseGlobalColorTable()
+    {
+        $this->useLocalColorTable = false;
         return $this;
     }
 
@@ -191,6 +200,10 @@ class Frame
     }
 
     /**
+     * @param int $clipLeft
+     * @param int $clipTop
+     * @param int $clipRight
+     * @param int $clipBottom
      * @return int[]
      */
     public function getPixels($clipLeft, $clipTop, $clipRight, $clipBottom)

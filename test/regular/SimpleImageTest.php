@@ -39,7 +39,7 @@ class SimpleImageTest extends PHPUnit_Framework_TestCase
         $canvas = new StringCanvas(10, 10, $pixelIndexes, $index2color);
 
         $builder = new GifBuilder(10, 10);
-        $builder->addFrame()->setCanvas($canvas)->setUseLocalColorTable(false);
+        $builder->addFrame()->setCanvas($canvas)->setUseGlobalColorTable();
 
         $contents = $builder->getContents();
 

@@ -6,13 +6,16 @@ use movemegif\data\Clipper;
 use movemegif\data\ColorTable;
 use movemegif\data\CommentExtension;
 use movemegif\data\Extension;
+use movemegif\data\GDAcceleratedPixelDataProducer;
 use movemegif\data\GraphicExtension;
 use movemegif\data\HeaderBlock;
 use movemegif\data\LogicalScreenDescriptor;
 use movemegif\data\NetscapeApplicationBlock;
+use movemegif\data\PHPPixelDataProducer;
 use movemegif\data\Trailer;
 use movemegif\domain\ClippingArea;
 use movemegif\domain\Frame;
+use movemegif\domain\GdCanvas;
 use movemegif\exception\MovemegifException;
 
 /**
@@ -121,8 +124,11 @@ class GifBuilder
                 // the clipping area itself needs to be clipped along the borders of the frame and the whole image
                 $clip = $clipper->getClip($frame, $this->width, $this->height);
 
+                // select the fast pixel data generator if possible
+                $pixelDataProducer = $this->getPixelDataProducer($frame, $clip, $colorTable);
+
                 $graphic = new GraphicExtension(
-                    $frame->getPixels($clip->getLeft(), $clip->getTop(), $clip->getRight(), $clip->getBottom()),
+                    $pixelDataProducer,
                     $colorTable,
                     $frame->getduration(),
                     $frame->getDisposalMethod(),
@@ -158,6 +164,33 @@ class GifBuilder
             $globalColorTable->getContents() .
             $extensionContents .
             $trailer->getContents();
+    }
+
+    private function getPixelDataProducer(Frame $frame, ClippingArea $clip, ColorTable $colorTable)
+    {
+        if (
+            $frame->usesLocalColorTable() &&
+            $frame->getCanvas() instanceof GdCanvas
+        ) {
+
+            /** @var GdCanvas $gdCanvas */
+            $gdCanvas = $frame->getCanvas();
+
+            $pixelDataProducer = new GDAcceleratedPixelDataProducer(
+                $gdCanvas,
+                $clip
+            );
+
+        } else {
+
+            $pixelDataProducer = new PHPPixelDataProducer(
+                $frame->getPixels($clip->getLeft(), $clip->getTop(), $clip->getRight(), $clip->getBottom()),
+                $colorTable
+            );
+
+        }
+
+        return $pixelDataProducer;
     }
 
     /**

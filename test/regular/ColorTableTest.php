@@ -35,7 +35,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 
         $builder->addFrame()
             ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
-            ->setUseLocalColorTable(false)
+            ->setUseGlobalColorTable()
             ->setDuration(50);
 
         $indexString = "
@@ -53,7 +53,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 
         $builder->addFrame()
             ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
-            ->setUseLocalColorTable(false)
+            ->setUseGlobalColorTable()
             ->setDuration(50);
 
         $contents = $builder->getContents();
@@ -83,7 +83,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 
         $builder->addFrame()
             ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
-            ->setUseLocalColorTable(true)
+            ->setUseLocalColorTable()
             ->setDuration(50);
 
         $indexString = "
@@ -101,7 +101,7 @@ class ColorTableTest extends PHPUnit_Framework_TestCase
 
         $builder->addFrame()
             ->setCanvas(new StringCanvas(4, 4, $indexString, $index2color))
-            ->setUseLocalColorTable(true)
+            ->setUseLocalColorTable()
             ->setDuration(50);
 
         $contents = $builder->getContents();

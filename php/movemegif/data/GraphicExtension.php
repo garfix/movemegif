@@ -2,8 +2,6 @@
 
 namespace movemegif\data;
 
-use movemegif\exception\EmptyFrameException;
-
 /**
  * @author Patrick van Bergen
  */
@@ -11,8 +9,8 @@ class GraphicExtension implements Extension
 {
     const GRAPHIC_CONTROL_LABEL = 0xF9;
 
-    /** @var array An array color indexes */
-    private $pixelColorIndexes;
+    /** @var  PixelDataProducer */
+    private $pixelDataProducer;
 
     /** @var ColorTable  */
     private $colorTable;
@@ -41,8 +39,9 @@ class GraphicExtension implements Extension
     /** @var int  */
     private $transparentColorIndex = null;
 
-    public function __construct(array $pixelData, ColorTable $colorTable, $duration, $disposalMethod, $transparencyColor, $width, $height, $left, $top)
+    public function __construct(PixelDataProducer $pixelDataProducer, ColorTable $colorTable, $duration, $disposalMethod, $transparencyColor, $width, $height, $left, $top)
     {
+        $this->pixelDataProducer = $pixelDataProducer;
         $this->colorTable = $colorTable;
         $this->duration = $duration;
         $this->disposalMethod = $disposalMethod;
@@ -50,15 +49,6 @@ class GraphicExtension implements Extension
         $this->height = $height;
         $this->left = $left;
         $this->top = $top;
-
-        if (empty($pixelData)) {
-            throw EmptyFrameException::create();
-        }
-
-        $this->pixelColorIndexes = array();
-        foreach ($pixelData as $color) {
-            $this->pixelColorIndexes[] = $colorTable->getColorIndex($color);
-        }
 
         if ($transparencyColor !== null) {
             $this->transparentColorIndex = $colorTable->getColorIndex($transparencyColor);
@@ -71,15 +61,25 @@ class GraphicExtension implements Extension
         $transparencyColorIndex = $transparencyColorFlag ? $this->transparentColorIndex : 0;
         $packedByte = ($this->disposalMethod * 4) + ($this->userInputFlag * 2) + $transparencyColorFlag;
 
-        $imageDescriptor = new ImageDescriptor($this->width, $this->height, $this->left, $this->top, $this->colorTable);
-        $imageData = new ImageData($this->pixelColorIndexes, $this->colorTable->getTableSize());
+        $imageDescriptor = new ImageDescriptor($this->width, $this->height, $this->left, $this->top, $this->colorTable->isLocal(), $this->pixelDataProducer->getColorTableSize());
+        $colorData = $this->pixelDataProducer->getColorData();
+        $pixelData = $this->pixelDataProducer->getCompressedPixelData();
+
+        /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
+        $lzwMinimumCodeSize = $this->getMinimumCodeSize($this->pixelDataProducer->getColorTableSize());
 
         return
             chr(self::EXTENSION_INTRODUCER) . chr(self::GRAPHIC_CONTROL_LABEL) .
             DataSubBlock::createBlocks(chr($packedByte) . pack('v', $this->duration) . chr($transparencyColorIndex)) .
             DataSubBlock::createBlocks('') .
             $imageDescriptor->getContents() .
-            ($this->colorTable->isLocal() ? $this->colorTable->getContents() : '') .
-            $imageData->getContents();
+            $colorData .
+            chr($lzwMinimumCodeSize) . DataSubBlock::createBlocks($pixelData) . DataSubBlock::createBlocks('');
+    }
+
+    private function getMinimumCodeSize($colorCount)
+    {
+        // The GIF spec requires a minimum of 2
+        return max(2, Math::minimumBits($colorCount));
     }
 }

@@ -77,20 +77,20 @@ class ExceptionTest extends PHPUnit_Framework_TestCase
         $this->assertSame(1, $count);
     }
 
-    public function testEmptyFrameException()
-    {
-        $count = 0;
-
-        try {
-
-            new GraphicExtension(array(), new ColorTable(0), 2, 1, 1, 1, 1, 0, 0);
-
-        } catch (EmptyFrameException $e) {
-            $count++;
-        }
-
-        $this->assertSame(1, $count);
-    }
+//    public function testEmptyFrameException()
+//    {
+//        $count = 0;
+//
+//        try {
+//
+//            new GraphicExtension(array(), new ColorTable(0), 2, 1, 1, 1, 1, 0, 0);
+//
+//        } catch (EmptyFrameException $e) {
+//            $count++;
+//        }
+//
+//        $this->assertSame(1, $count);
+//    }
 
     public function testColorNotFoundException()
     {

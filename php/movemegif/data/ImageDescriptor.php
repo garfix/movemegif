@@ -21,8 +21,11 @@ class ImageDescriptor
     /** @var int Frame image height in [0..65535] */
     private $height;
 
-    /** @var  ColorTable */
-    private $colorTable;
+    /** @var  bool */
+    private $colorTableIsLocal;
+
+    /** @var  int */
+    private $colorTableSize;
 
     /** @var  int In [0, 1] Not used here. */
     private $interlaceFlag = 0;
@@ -30,21 +33,22 @@ class ImageDescriptor
     /** @var  int In [0, 1] Not used here.*/
     private $sortFlag = 0;
 
-    public function __construct($width, $height, $left, $top, ColorTable $colorTable)
+    public function __construct($width, $height, $left, $top, $colorTableIsLocal, $colorTableSize)
     {
         $this->width = $width;
         $this->height = $height;
         $this->left = $left;
         $this->top = $top;
-        $this->colorTable = $colorTable;
+        $this->colorTableIsLocal = $colorTableIsLocal;
+        $this->colorTableSize = $colorTableSize;
     }
 
     public function getContents()
     {
-        $localColorTableFlag = (int)$this->colorTable->isLocal();
+        $localColorTableFlag = (int)$this->colorTableIsLocal;
 
         if ($localColorTableFlag) {
-            $colorTableSize = $this->colorTable->getTableSize();
+            $colorTableSize = $this->colorTableSize;
             $sizeOfLocalColorTable = $colorTableSize ? Math::getExponent($colorTableSize) - 1 : 0;
         } else {
             $sizeOfLocalColorTable = 0;

@@ -23,12 +23,9 @@ class ImageData
 
     public function getContents()
     {
-        /** @var int $lzwMinimumCodeSize The number of bits required for the initial color index codes, plus 2 special codes (Clear Code and End of Information Code) */
-        $lzwMinimumCodeSize = $this->getMinimumCodeSize($this->colorTableSize);
-
         $codes = $this->gifLzwCompress($this->pixelColorIndexes, $this->colorTableSize);
 
-        return chr($lzwMinimumCodeSize) . DataSubBlock::createBlocks($codes) . DataSubBlock::createBlocks('');
+        return $codes;
     }
 
     /**
@@ -42,7 +39,7 @@ class ImageData
      * @param int $colorIndexCount Number of colors (the first power of two that spans it)
      * @return array
      */
-    function gifLzwCompress(array $colorIndexes, $colorIndexCount)
+    private function gifLzwCompress(array $colorIndexes, $colorIndexCount)
     {
         // initialize sequence 2 code map
         list($sequence2code, $runningCode) = $this->createSequence2CodeMap($colorIndexCount);
