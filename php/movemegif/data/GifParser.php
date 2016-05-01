@@ -43,12 +43,10 @@ class GifParser
 
     private function parseLogicalScreenDescription($imageData, $offset, $gifData)
     {
-        $lsd = substr($imageData, $offset, 7);
+        $gifData->imageWidth = ord($imageData[$offset + 0]) + 256 * ord($imageData[$offset + 1]);
+        $gifData->imageHeight = ord($imageData[$offset + 2]) + 256 * ord($imageData[$offset + 3]);
 
-        $gifData->imageWidth = ord($lsd[0]) + 256 * ord($lsd[1]);
-        $gifData->imageHeight = ord($lsd[2]) + 256 * ord($lsd[3]);
-
-        $packedField = ord($lsd[4]);
+        $packedField = ord($imageData[$offset + 4]);
 
         $gifData->usesGlobalColorTable = (bool)($packedField & 0x80);
         $gifData->globalColorTableSize = 1 << (($packedField & 0x07) + 1);
@@ -68,11 +66,9 @@ class GifParser
 
     private function parseApplicationExtension($imageData, $offset, GifData $gifData)
     {
-        $extension = substr($imageData, $offset);
-
-        if (ord($extension[0]) == 0x3B) {
+        if (ord($imageData[$offset + 0]) == 0x3B) {
             return null;
-        } elseif (ord($extension[0]) == 0x21 && ord($extension[1]) == 0xF9) {
+        } elseif (ord($imageData[$offset + 0]) == 0x21 && ord($imageData[$offset + 1]) == 0xF9) {
             return $this->parseGraphicsControlExtension($imageData, $offset, $gifData);
         } else {
             throw GifParseException::applicationExtension();
@@ -91,8 +87,7 @@ class GifParser
 
     private function parseImageDescriptor($imageData, $offset, $gifData)
     {
-        $id = substr($imageData, $offset);
-        $packedField = $id[9];
+        $packedField = $imageData[$offset + 9];
 
         $gifData->usesLocalColorTable = (bool)($packedField & 0x80);
         $gifData->localColorTableSize = 1 << (($packedField & 0x07) + 1);
