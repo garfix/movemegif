@@ -43,10 +43,44 @@ class GifBuilder
     /** @var  int Height of the canvas in [0..65535] */
     private $height;
 
-    public function __construct($width, $height)
+    /**
+     * Creates the builder with the width and height of the image canvas.
+     * When width and height are left empty, they will be taken from the first frame.
+     *
+     * @param int|null $width
+     * @param int|null $height
+     */
+    public function __construct($width = null, $height = null)
     {
         $this->width = $width;
         $this->height = $height;
+    }
+
+    private function getWidth()
+    {
+        if ($this->width === null) {
+            $this->initializeDimensionsToFirstFrame();
+        }
+        return $this->width;
+    }
+
+    private function getHeight()
+    {
+        if ($this->height === null) {
+            $this->initializeDimensionsToFirstFrame();
+        }
+        return $this->height;
+    }
+
+    private function initializeDimensionsToFirstFrame()
+    {
+        foreach ($this->extensions as $extension) {
+            if ($extension instanceof Frame) {
+                $this->width = $extension->getWidth();
+                $this->height = $extension->getHeight();
+                break;
+            }
+        }
     }
 
     /**
@@ -95,6 +129,8 @@ class GifBuilder
         $globalColorTable = new ColorTable(false);
         $headerBlock = new HeaderBlock();
         $trailer = new Trailer();
+        $canvasWidth = $this->getWidth();
+        $canvasHeight = $this->getHeight();
 
         $extensionContents = '';
 
@@ -122,7 +158,7 @@ class GifBuilder
                 }
 
                 // the clipping area itself needs to be clipped along the borders of the frame and the whole image
-                $clip = $clipper->getClip($frame, $this->width, $this->height);
+                $clip = $clipper->getClip($frame, $canvasWidth, $canvasHeight);
 
                 // select the fast pixel data generator if possible
                 $pixelDataProducer = $this->getPixelDataProducer($frame, $clip, $colorTable);
@@ -130,7 +166,7 @@ class GifBuilder
                 $graphic = new GraphicExtension(
                     $pixelDataProducer,
                     $colorTable,
-                    $frame->getduration(),
+                    $frame->getDuration(),
                     $frame->getDisposalMethod(),
                     $frame->getTransparencyColor(),
                     $clip->getRight() - $clip->getLeft() + 1,
@@ -156,7 +192,7 @@ class GifBuilder
             $extensionContents .= $extension->getContents();
         }
 
-        $logicalScreenDescriptor = new LogicalScreenDescriptor($this->width, $this->height, $globalColorTable, $this->backgroundColor);
+        $logicalScreenDescriptor = new LogicalScreenDescriptor($canvasWidth, $canvasHeight, $globalColorTable, $this->backgroundColor);
 
         return
             $headerBlock->getContents() .
