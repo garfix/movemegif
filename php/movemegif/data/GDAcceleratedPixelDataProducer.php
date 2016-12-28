@@ -37,7 +37,10 @@ class GDAcceleratedPixelDataProducer implements PixelDataProducer
             $clippingWidth, $clippingHeight);
 
         // make sure there is one color specified as transparent, to enforce GIF89a in imagegif
-        imagecolortransparent($clippedResource, 0);
+        // fix by T Y for issue https://www.phpclasses.org/discuss/package/9748/thread/3/
+        if (-1 === imagecolortransparent($clippedResource, 0)) {
+            imagecolortransparent($clippedResource, imagecolorallocate($clippedResource, 255, 255, 255));
+        }
 
         ob_start();
         imagegif($clippedResource);
