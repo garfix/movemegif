@@ -87,7 +87,7 @@ class GifParser
 
     private function parseImageDescriptor($imageData, $offset, $gifData)
     {
-        $packedField = (int)$imageData[$offset + 9];
+        $packedField = ord($imageData[$offset + 9]);
 
         $gifData->usesLocalColorTable = (bool)($packedField & 0x80);
         $gifData->localColorTableSize = 1 << (($packedField & 0x07) + 1);
