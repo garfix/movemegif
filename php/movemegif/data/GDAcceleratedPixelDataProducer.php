@@ -29,6 +29,7 @@ class GDAcceleratedPixelDataProducer implements PixelDataProducer
         $clippingWidth = $clippingArea->getRight() - $clippingArea->getLeft() + 1;
         $clippingHeight = $clippingArea->getBottom() - $clippingArea->getTop() + 1;
         $clippedResource = imagecreate($clippingWidth, $clippingHeight);
+        imagepalettecopy($clippedResource , $gdCanvas->getResource());
 
         imagecopy(
             $clippedResource, $this->gdCanvas->getResource(),
