@@ -24,6 +24,9 @@ class LogicalScreenDescriptor
 
     /** @var int Probably not used by clients. Not used here. */
     private $pixelAspectRatio = 0;
+    
+    /** @var ColorTable  */
+    private $colorTable;
 
     public function __construct($width, $height, ColorTable $colorTable, $backgroundColor)
     {
